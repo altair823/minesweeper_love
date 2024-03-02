@@ -1,19 +1,22 @@
+require "sprite/block"
+img = love.graphics.newImage("resource/mine_block.png")
+
 function love.load()
-    image = love.graphics.newImage("resource/mine_block.png")
     love.graphics.setNewFont(12)
-    love.graphics.setColor(0, 0, 0)
     love.graphics.setBackgroundColor(255, 255, 255)
 end
 
-function love.update(dt)
-    mx, my = love.mouse.getPosition()
-end
+a = {image = img, quad = love.graphics.newQuad(0, 0, 32, 32, img)}
 
 function love.draw()
-    love.graphics.draw(image, mx, my)
-    love.graphics.print("Click and drag the cake around or use the arow keys", 10, 10)
-    love.graphics.setColor(255, 0, 0)
-    love.graphics.print("This text is red", 100, 200)
+    blocks = {}
+    for i=1, 10 do
+        for j=1, 10 do
+            blocks[i] = Block:new(i*32, j*32, a)
+            blocks[i]:draw()
+        end
+    end
+
 end
 
 function love.mousemoved(x, y, button, istouch)
