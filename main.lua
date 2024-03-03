@@ -6,12 +6,9 @@ require "resource_enum"
 mouseLocation = {x = 0, y = 0}
 
 function love.load()
-    love.graphics.setColor(255, 255, 255)
     love.window.setMode(1024, 900, {resizable=false, vsync=false, minwidth=400, minheight=300})
-    
-    love.graphics.setNewFont(12)
-    love.graphics.setBackgroundColor(255, 255, 255)
-    
+    love.window.setTitle("Mine Sweeper")
+
     
     board = Board:new(0, 0, 1024, 700, boardAtlas)
     field = Field:new(20, 20, 80)
