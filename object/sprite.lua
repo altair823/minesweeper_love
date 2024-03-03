@@ -1,20 +1,8 @@
-Sprite = {}
-Sprite.__index = Sprite
+require "object/object"
 
-function Sprite:inherit()
-    local cls = {}
-    for k, v in pairs(self) do
-        if k:find("__") == 1 then
-            cls[k] = v
-        end
-    end
-    cls.__index = cls
-    cls.super = self
-    setmetatable(cls, self)
-    return cls
-end
-  
-function Sprite:new(x, y, width, height, Atlas)
+Sprite = Object:inherit()
+
+function Object:new(x, y, width, height, atlas)
     local sprite = {}
     setmetatable(sprite, self)
     self.__index = self
@@ -23,7 +11,7 @@ function Sprite:new(x, y, width, height, Atlas)
     sprite.width = width
     sprite.height = height
     sprite.center = {x = x + width / 2, y = y + height / 2}
-    sprite.quad = assert(Atlas.quad)
-    sprite.image = assert(Atlas.image)
+    sprite.quad = assert(atlas.quad)
+    sprite.image = assert(atlas.image)
     return sprite
 end
