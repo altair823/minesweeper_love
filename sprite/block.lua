@@ -1,15 +1,33 @@
 Block = {}
 
-function Block:new(x, y, block_image)
-    self.block = {}
-    self.block.x = x
-    self.block.y = y
-    self.block.quad = block_image.quad
-    self.block.image = block_image.image
-    setmetatable(self, Block)
-    return self
+function Block:new(x, y, width, height, block_atlas)
+    o = {}
+    setmetatable(o, self)
+    self.__index = self
+    o.x = x
+    o.y = y
+    o.width = width
+    o.height = height
+    o.quad = assert(block_atlas.quad)
+    o.image = assert(block_atlas.image)
+    o.isClicked = false
+    return o
 end
 
 function Block:draw()
-    love.graphics.draw(self.block.image, self.block.quad, self.block.x, self.block.y)
+    if self.isClicked then
+        love.graphics.setColor(255, 0, 0)
+    else
+        love.graphics.setColor(255, 255, 255)
+    end
+    love.graphics.draw(self.image, self.quad, self.x, self.y)
+    love.graphics.setColor(255, 255, 255)
+end
+
+function Block:clicked()
+    self.isClicked = true
+end
+
+function Block:released()
+    self.isClicked = false
 end
