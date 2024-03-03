@@ -26,16 +26,16 @@ function love.load()
     blockAtlas = {image = atlas.block_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.block_image)}
     boardAtlas = {image = atlas.board_image, quad = love.graphics.newQuad(0, 0, 1024, 700, atlas.board_image)}
     cellAtlas = {
-        mine = {image = atlas.mine_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.mine_image)},
-        num0 = {image = atlas.num0_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num0_image)},
-        num1 = {image = atlas.num1_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num1_image)},
-        num2 = {image = atlas.num2_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num2_image)},
-        num3 = {image = atlas.num3_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num3_image)},
-        num4 = {image = atlas.num4_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num4_image)},
-        num5 = {image = atlas.num5_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num5_image)},
-        num6 = {image = atlas.num6_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num6_image)},
-        num7 = {image = atlas.num7_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num7_image)},
-        num8 = {image = atlas.num8_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num8_image)},
+        [MineEnum.MINE] = {image = atlas.mine_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.mine_image)},
+        [MineEnum.EMPTY] = {image = atlas.num0_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num0_image)},
+        [MineEnum.ONE] = {image = atlas.num1_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num1_image)},
+        [MineEnum.TWO] = {image = atlas.num2_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num2_image)},
+        [MineEnum.THREE] = {image = atlas.num3_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num3_image)},
+        [MineEnum.FOUR] = {image = atlas.num4_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num4_image)},
+        [MineEnum.FIVE] = {image = atlas.num5_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num5_image)},
+        [MineEnum.SIX] = {image = atlas.num6_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num6_image)},
+        [MineEnum.SEVEN] = {image = atlas.num7_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num7_image)},
+        [MineEnum.EIGHT] = {image = atlas.num8_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.num8_image)},
     }
     
     board = Board:new(0, 0, 1024, 700, boardAtlas)

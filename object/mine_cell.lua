@@ -2,9 +2,9 @@ require "object/sprite"
 
 Cell = Sprite:inherit()
 
-function Cell:new(x, y, width, height, number, atlas)
+function Cell:new(x, y, width, height, type, atlas)
     local cell = Sprite.new(self, x, y, width, height, atlas)
-    cell.number = number
+    cell.type = type
     return cell
 end
 
