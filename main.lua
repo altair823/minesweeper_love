@@ -1,5 +1,5 @@
-require "sprite/block"
-require "sprite/board"
+require "object/mine_block"
+require "object/mine_board"
 
 mouseLocation = {x = 0, y = 0}
 
@@ -9,14 +9,16 @@ function love.load()
     atlas = {
         block_image = assert(love.graphics.newImage("resource/mine_block.png")),
         board_image = assert(love.graphics.newImage("resource/mine_board.png")),
+        number_image = assert(love.graphics.newImage("resource/mine_num2.png"))
     }
     love.graphics.setNewFont(12)
     love.graphics.setBackgroundColor(255, 255, 255)
-    block_atlas = {image = atlas.block_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.block_image)}
-    board_atlas = {image = atlas.board_image, quad = love.graphics.newQuad(0, 0, 1024, 700, atlas.board_image)}
+    blockAtlas = {image = atlas.block_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.block_image)}
+    boardAtlas = {image = atlas.board_image, quad = love.graphics.newQuad(0, 0, 1024, 700, atlas.board_image)}
+    numberAtlas = {image = atlas.number_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.number_image)}
     
-    board = Board:new(0, 0, 1024, 700, board_atlas)
-    board:setBlockMatrix(17, 15, block_atlas, 32, 32)
+    board = Board:new(0, 0, 1024, 700, boardAtlas)
+    board:setBlockMatrix(17, 15, numberAtlas, blockAtlas, 32, 32)
 end
 
 function love.draw()

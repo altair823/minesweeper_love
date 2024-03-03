@@ -1,19 +1,9 @@
-Block = {}
+require "object/sprite"
 
-function Block:new(x, y, width, height, block_atlas)
-    o = {}
-    setmetatable(o, self)
-    self.__index = self
-    o.x = x
-    o.y = y
-    o.width = width
-    o.height = height
-    o.quad = assert(block_atlas.quad)
-    o.image = assert(block_atlas.image)
-    o.isClicked = false
-    o.isShown = true
-    return o
-end
+Block = Sprite:inherit()
+
+Block.isToggled = false
+Block.isShown = true
 
 function Block:draw()
     if self.isToggled then
