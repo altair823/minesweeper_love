@@ -54,8 +54,6 @@ function love.mousemoved(x, y, dx, dy, istouch)
     and y >= board.center.y - (board.field.yCount * 32) / 2 and y <= board.center.y + (board.field.yCount * 32) / 2 - 1 then
         local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1
         local j = math.floor((y - (board.center.y - (board.field.yCount * 32) / 2)) / 32) + 1
-        print("x: " .. x .. ", y: " .. y)
-        print("Block (" .. i .. ", " .. j .. ")")
         board.blockMatrix[i][j]:toggle()
         
         -- untoggle other blocks
