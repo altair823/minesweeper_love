@@ -23,16 +23,37 @@ function love.draw()
     board:draw()
 end
 
-function love.mousepressed(x, y, button, istouch)
-    -- check if mouse is pressed block
-    if x >= board.center.x - (board.xCount * 32) / 2 and x <= board.center.x + (board.xCount * 32) / 2 
-    and y >= board.center.y - (board.yCount * 32) / 2 and y <= board.center.y + (board.yCount * 32) / 2 then
+function love.mousemoved(x, y, dx, dy, istouch)
+    mouseLocation.x = x
+    mouseLocation.y = y
+    if x >= board.center.x - (board.xCount * 32) / 2 and x <= board.center.x + (board.xCount * 32) / 2 - 1
+    and y >= board.center.y - (board.yCount * 32) / 2 and y <= board.center.y + (board.yCount * 32) / 2 - 1 then
         local i = math.floor((x - (board.center.x - (board.xCount * 32) / 2)) / 32) + 1
         local j = math.floor((y - (board.center.y - (board.yCount * 32) / 2)) / 32) + 1
-        print("Mouse pressed at (" .. x .. ", " .. y .. ")")
-        print("Block (" .. i .. ", " .. j .. ") clicked")
-        board.blockMatrix[i][j]:clicked()
+        print("x: " .. x .. ", y: " .. y)
+        print("Block (" .. i .. ", " .. j .. ")")
+        board.blockMatrix[i][j]:toggle()
+        
+        -- untoggle other blocks
+        for ii=1, board.xCount do
+            for jj=1, board.yCount do
+                if ii ~= i or jj ~= j then
+                    board.blockMatrix[ii][jj]:untoggle()
+                end
+            end
+        end
+    else
+        for i=1, board.xCount do
+            for j=1, board.yCount do
+                board.blockMatrix[i][j]:untoggle()
+            end
+        end
     end
+end
+
+function love.mousepressed(x, y, button, istouch)
+    -- check if mouse is pressed block
+    
 end
 
 function love.mousereleased(x, y, button, istouch)
@@ -41,10 +62,7 @@ function love.mousereleased(x, y, button, istouch)
     and y >= board.center.y - (board.yCount * 32) / 2 and y <= board.center.y + (board.yCount * 32) / 2 then
         local i = math.floor((x - (board.center.x - (board.xCount * 32) / 2)) / 32) + 1
         local j = math.floor((y - (board.center.y - (board.yCount * 32) / 2)) / 32) + 1
-        print("Mouse released at (" .. x .. ", " .. y .. ")")
-        
-        print("Block (" .. i .. ", " .. j .. ") released")
-        board.blockMatrix[i][j]:released()
+        board.blockMatrix[i][j]:release()
     end
     
 end
