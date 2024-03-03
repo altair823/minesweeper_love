@@ -24,18 +24,21 @@ function love.draw()
 end
 
 function love.mousepressed(x, y, button, istouch)
-    if x >= board.x and x <= board.width and y >= board.y and y <= board.height then
+    -- check if mouse is pressed block
+    if x >= board.center.x - (board.xCount * 32) / 2 and x <= board.center.x + (board.xCount * 32) / 2 
+    and y >= board.center.y - (board.yCount * 32) / 2 and y <= board.center.y + (board.yCount * 32) / 2 then
         local i = math.floor((x - (board.center.x - (board.xCount * 32) / 2)) / 32) + 1
         local j = math.floor((y - (board.center.y - (board.yCount * 32) / 2)) / 32) + 1
         print("Mouse pressed at (" .. x .. ", " .. y .. ")")
-        
         print("Block (" .. i .. ", " .. j .. ") clicked")
         board.blockMatrix[i][j]:clicked()
     end
 end
 
 function love.mousereleased(x, y, button, istouch)
-    if x >= board.x and x <= board.width and y >= board.y and y <= board.height then
+    -- check if mouse is released block
+    if x >= board.center.x - (board.xCount * 32) / 2 and x <= board.center.x + (board.xCount * 32) / 2
+    and y >= board.center.y - (board.yCount * 32) / 2 and y <= board.center.y + (board.yCount * 32) / 2 then
         local i = math.floor((x - (board.center.x - (board.xCount * 32) / 2)) / 32) + 1
         local j = math.floor((y - (board.center.y - (board.yCount * 32) / 2)) / 32) + 1
         print("Mouse released at (" .. x .. ", " .. y .. ")")
