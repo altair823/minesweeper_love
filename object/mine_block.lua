@@ -1,8 +1,8 @@
 require "object/sprite"
 
-Block = Sprite:inherit()
+MineBlock = Sprite:inherit()
 
-function Block:new(x, y, width, height, defaultAtlas, flagAtlas)
+function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas)
     local block = Sprite.new(self, x, y, width, height, defaultAtlas)
     block.isToggled = false
     block.isShown = true
@@ -12,7 +12,7 @@ function Block:new(x, y, width, height, defaultAtlas, flagAtlas)
     return block
 end
 
-function Block:draw()
+function MineBlock:draw()
     if self.isToggled then
         love.graphics.setColor(255, 0, 0)
     else
@@ -24,20 +24,20 @@ function Block:draw()
     love.graphics.setColor(255, 255, 255)
 end
 
-function Block:toggle()
+function MineBlock:toggle()
     self.isToggled = true
 end
 
-function Block:untoggle()
+function MineBlock:untoggle()
     self.isToggled = false
 end
 
-function Block:leftClicked()
+function MineBlock:leftClicked()
     self.isToggled = false
     self.isShown = false
 end
 
-function Block:rightClicked()
+function MineBlock:rightClicked()
     if self.isFlagged then
         self.isFlagged = false
         self:changeAtlas(self.width, self.height, self.defaultAtlas)

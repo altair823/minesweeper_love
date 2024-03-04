@@ -3,14 +3,14 @@ require "model/mine_field"
 require "object/mine_block"
 require "object/mine_cell"
 
-Board = Sprite:inherit()
+MineBoard = Sprite:inherit()
 
-function Board:new(x, y, width, height, atlas)
+function MineBoard:new(x, y, width, height, atlas)
     local board = Sprite.new(self, x, y, width, height, atlas)
     return board
 end
 
-function Board:setBlockMatrix(field, cellAtlas, blockAtlas, width, height)
+function MineBoard:setBlockMatrix(field, cellAtlas, blockAtlas, width, height)
     self.field = field
     self.numberMatrix = {}
     self.blockMatrix = {}
@@ -20,13 +20,13 @@ function Board:setBlockMatrix(field, cellAtlas, blockAtlas, width, height)
         for j=1, self.field.yCount do
             local cellX = self.center.x - (self.field.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.field.yCount * height) / 2 + (j - 1) * height
-            self.numberMatrix[i][j] = Cell:new(cellX, cellY, width, height, self.field.mineMatrix[i][j], cellAtlas[self.field.mineMatrix[i][j]])
-            self.blockMatrix[i][j] = Block:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
+            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.field.mineMatrix[i][j], cellAtlas[self.field.mineMatrix[i][j]])
+            self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
         end
     end
 end
 
-function Board:draw()
+function MineBoard:draw()
     self.canvas = love.graphics.newCanvas(1024, 1024)
     love.graphics.setCanvas(self.canvas)
     love.graphics.clear()
@@ -40,7 +40,7 @@ function Board:draw()
     love.graphics.draw(self.canvas, self.x, self.y)
 end
 
-function Board:draw_numbers()
+function MineBoard:draw_numbers()
     for i=1, #self.numberMatrix do
         for j=1, #self.numberMatrix[i] do
             self.numberMatrix[i][j]:draw()
@@ -48,7 +48,7 @@ function Board:draw_numbers()
     end
 end
 
-function Board:draw_blocks()
+function MineBoard:draw_blocks()
     for i=1, #self.blockMatrix do
         for j=1, #self.blockMatrix[i] do
             self.blockMatrix[i][j]:draw()
@@ -58,7 +58,7 @@ end
 
 prevLoc = {i = 0, j = 0}
 
-function Board:mouseMoved(x, y)
+function MineBoard:mouseMoved(x, y)
     mouseLocation.x = x
     mouseLocation.y = y
     if x >= board.center.x - (board.field.xCount * 32) / 2 and x <= board.center.x + (board.field.xCount * 32) / 2 - 1
@@ -82,7 +82,7 @@ function Board:mouseMoved(x, y)
     end
 end
 
-function Board:mouseReleased(x, y, button)
+function MineBoard:mouseReleased(x, y, button)
     if x >= board.center.x - (board.field.xCount * 32) / 2 and x <= board.center.x + (board.field.xCount * 32) / 2
     and y >= board.center.y - (board.field.yCount * 32) / 2 and y <= board.center.y + (board.field.yCount * 32) / 2 then
         local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1

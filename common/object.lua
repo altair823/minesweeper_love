@@ -2,15 +2,15 @@ Object = {}
 Object.__index = Object
 
 function Object:inherit()
-    local cls = {}
+    local child = {}
     for k, v in pairs(self) do
         if k:find("__") == 1 then
-            cls[k] = v
+            child[k] = v
         end
     end
-    cls.__index = cls
-    cls.super = self
-    setmetatable(cls, self)
-    return cls
+    child.__index = child
+    child.super = self
+    setmetatable(child, self)
+    return child
 end
   

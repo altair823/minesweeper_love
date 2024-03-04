@@ -1,4 +1,4 @@
-require "object/object"
+require "common/object"
 
 Sprite = Object:inherit()
 

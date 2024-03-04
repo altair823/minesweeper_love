@@ -10,7 +10,7 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    board = Board:new(0, 0, 1024, 700, boardAtlas)
+    board = MineBoard:new(0, 0, 1024, 700, boardAtlas)
     field = Field:new(20, 20, 80)
     board:setBlockMatrix(field, cellAtlas, blockAtlas, 32, 32)
 end
