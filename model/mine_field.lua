@@ -12,6 +12,11 @@ MineEnum = {
     EIGHT = 8
 }
 
+BlockEnum = {
+    DEFAULT = 1,
+    FLAG = 2
+}
+
 Field = {}
 
 function Field:new(xCount, yCount, mineCount)

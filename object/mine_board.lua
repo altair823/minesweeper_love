@@ -21,7 +21,7 @@ function Board:setBlockMatrix(field, cellAtlas, blockAtlas, width, height)
             local cellX = self.center.x - (self.field.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.field.yCount * height) / 2 + (j - 1) * height
             self.numberMatrix[i][j] = Cell:new(cellX, cellY, width, height, self.field.mineMatrix[i][j], cellAtlas[self.field.mineMatrix[i][j]])
-            self.blockMatrix[i][j] = Block:new(cellX, cellY, width, height, blockAtlas)
+            self.blockMatrix[i][j] = Block:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
         end
     end
 end
@@ -85,11 +85,15 @@ end
 function Board:mouseReleased(x, y, button)
     if x >= board.center.x - (board.field.xCount * 32) / 2 and x <= board.center.x + (board.field.xCount * 32) / 2
     and y >= board.center.y - (board.field.yCount * 32) / 2 and y <= board.center.y + (board.field.yCount * 32) / 2 then
+        local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1
+        local j = math.floor((y - (board.center.y - (board.field.yCount * 32) / 2)) / 32) + 1
         if button == 1 then
-            local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1
-            local j = math.floor((y - (board.center.y - (board.field.yCount * 32) / 2)) / 32) + 1
+            if board.blockMatrix[i][j].isToggled and not board.blockMatrix[i][j].isFlagged then
+                board.blockMatrix[i][j]:leftClicked()
+            end
+        elseif button == 2 then
             if board.blockMatrix[i][j].isToggled then
-                board.blockMatrix[i][j]:release()
+                board.blockMatrix[i][j]:rightClicked()
             end
         end
     end

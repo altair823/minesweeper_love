@@ -1,19 +1,22 @@
 atlas = {
-    block_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    board_image = assert(love.graphics.newImage("resource/mine_board.png")),
-    num0_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num1_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num2_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num3_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num4_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num5_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num6_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num7_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    num8_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    flag_image = assert(love.graphics.newImage("resource/mine_cell.png")),
-    mine_image = assert(love.graphics.newImage("resource/mine_cell.png")),
+    block_image = love.graphics.newImage("resource/mine_cell.png"),
+    board_image = love.graphics.newImage("resource/mine_board.png"),
+    num0_image = love.graphics.newImage("resource/mine_cell.png"),
+    num1_image = love.graphics.newImage("resource/mine_cell.png"),
+    num2_image = love.graphics.newImage("resource/mine_cell.png"),
+    num3_image = love.graphics.newImage("resource/mine_cell.png"),
+    num4_image = love.graphics.newImage("resource/mine_cell.png"),
+    num5_image = love.graphics.newImage("resource/mine_cell.png"),
+    num6_image = love.graphics.newImage("resource/mine_cell.png"),
+    num7_image = love.graphics.newImage("resource/mine_cell.png"),
+    num8_image = love.graphics.newImage("resource/mine_cell.png"),
+    flag_image = love.graphics.newImage("resource/mine_cell.png"),
+    mine_image = love.graphics.newImage("resource/mine_cell.png"),
 }
-blockAtlas = {image = atlas.block_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.block_image)}
+blockAtlas = {
+    [BlockEnum.DEFAULT] = {image = atlas.block_image, quad = love.graphics.newQuad(0, 0, 32, 32, atlas.block_image)},
+    [BlockEnum.FLAG] = {image = atlas.flag_image, quad = love.graphics.newQuad(64, 0, 32, 32, atlas.flag_image)},
+}
 boardAtlas = {image = atlas.board_image, quad = love.graphics.newQuad(0, 0, 1024, 700, atlas.board_image)}
 cellAtlas = {
     [MineEnum.MINE] = {image = atlas.mine_image, quad = love.graphics.newQuad(96, 0, 32, 32, atlas.mine_image)},

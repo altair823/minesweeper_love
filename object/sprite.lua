@@ -11,7 +11,15 @@ function Object:new(x, y, width, height, atlas)
     sprite.width = width
     sprite.height = height
     sprite.center = {x = x + width / 2, y = y + height / 2}
-    sprite.quad = assert(atlas.quad)
-    sprite.image = assert(atlas.image)
+    sprite.quad = atlas.quad
+    sprite.image = atlas.image
     return sprite
+end
+
+function Object:changeAtlas(width, height, atlas)
+    self.width = width
+    self.height = height
+    self.center = {x = self.x + width / 2, y = self.y + height / 2}
+    self.quad = atlas.quad
+    self.image = atlas.image
 end
