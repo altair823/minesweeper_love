@@ -1,3 +1,5 @@
+require "common/object"
+
 
 MineEnum = {
     MINE = 'x',
@@ -17,9 +19,9 @@ BlockEnum = {
     FLAG = 2
 }
 
-Field = {}
+MineField = Object:inherit()
 
-function Field:new(xCount, yCount, mineCount)
+function MineField:new(xCount, yCount, mineCount)
     if xCount < 1 or yCount < 1 or mineCount < 1 or mineCount > xCount * yCount then
         return nil
     end
@@ -50,7 +52,7 @@ function Field:new(xCount, yCount, mineCount)
     return field
 end
 
-function Field:setAdjacent()
+function MineField:setAdjacent()
     adjacents = {
         {0, 1},
         {0, -1},
@@ -76,7 +78,7 @@ function Field:setAdjacent()
     end
 end
 
-function Field:printTest()
+function MineField:printTest()
     local mineC = 0
     for i=1, self.xCount do
         temp = ""

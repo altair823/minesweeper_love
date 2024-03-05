@@ -10,34 +10,26 @@ function MineBoard:new(x, y, width, height, atlas)
     return board
 end
 
-function MineBoard:setBlockMatrix(field, cellAtlas, blockAtlas, width, height)
-    self.field = field
+function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, height)
+    self.mineField = mineField
     self.numberMatrix = {}
     self.blockMatrix = {}
-    for i=1, self.field.xCount do
+    for i=1, self.mineField.xCount do
         self.numberMatrix[i] = {}
         self.blockMatrix[i] = {}
-        for j=1, self.field.yCount do
-            local cellX = self.center.x - (self.field.xCount * width) / 2 + (i - 1) * width
-            local cellY = self.center.y - (self.field.yCount * height) / 2 + (j - 1) * height
-            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.field.mineMatrix[i][j], cellAtlas[self.field.mineMatrix[i][j]])
+        for j=1, self.mineField.yCount do
+            local cellX = self.center.x - (self.mineField.xCount * width) / 2 + (i - 1) * width
+            local cellY = self.center.y - (self.mineField.yCount * height) / 2 + (j - 1) * height
+            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField.mineMatrix[i][j], cellAtlas[self.mineField.mineMatrix[i][j]])
             self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
         end
     end
 end
 
 function MineBoard:draw()
-    self.canvas = love.graphics.newCanvas(1024, 1024)
-    love.graphics.setCanvas(self.canvas)
-    love.graphics.clear()
-    love.graphics.setColor(255,255,255)
-    love.graphics.push()
     love.graphics.draw(self.image, self.quad, self.x, self.y)
     self:draw_numbers()
     self:draw_blocks()
-    love.graphics.pop()
-    love.graphics.setCanvas()
-    love.graphics.draw(self.canvas, self.x, self.y)
 end
 
 function MineBoard:draw_numbers()
@@ -61,21 +53,21 @@ prevLoc = {i = 0, j = 0}
 function MineBoard:mouseMoved(x, y)
     mouseLocation.x = x
     mouseLocation.y = y
-    if x >= board.center.x - (board.field.xCount * 32) / 2 and x <= board.center.x + (board.field.xCount * 32) / 2 - 1
-    and y >= board.center.y - (board.field.yCount * 32) / 2 and y <= board.center.y + (board.field.yCount * 32) / 2 - 1 then
-        local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1
-        local j = math.floor((y - (board.center.y - (board.field.yCount * 32) / 2)) / 32) + 1
+    if x >= self.center.x - (self.mineField.xCount * 32) / 2 and x <= self.center.x + (self.mineField.xCount * 32) / 2 - 1
+    and y >= self.center.y - (self.mineField.yCount * 32) / 2 and y <= self.center.y + (self.mineField.yCount * 32) / 2 - 1 then
+        local i = math.floor((x - (self.center.x - (self.mineField.xCount * 32) / 2)) / 32) + 1
+        local j = math.floor((y - (self.center.y - (self.mineField.yCount * 32) / 2)) / 32) + 1
         if prevLoc.i ~= i or prevLoc.j ~= j then
             if prevLoc.i ~= 0 and prevLoc.j ~= 0 then
-                board.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
+                self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
             end
-            board.blockMatrix[i][j]:toggle()
+            self.blockMatrix[i][j]:toggle()
             prevLoc.i = i
             prevLoc.j = j
         end
     else
         if prevLoc.i ~= 0 and prevLoc.j ~= 0 then
-            board.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
+            self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
             prevLoc.i = 0
             prevLoc.j = 0
         end
@@ -83,17 +75,17 @@ function MineBoard:mouseMoved(x, y)
 end
 
 function MineBoard:mouseReleased(x, y, button)
-    if x >= board.center.x - (board.field.xCount * 32) / 2 and x <= board.center.x + (board.field.xCount * 32) / 2
-    and y >= board.center.y - (board.field.yCount * 32) / 2 and y <= board.center.y + (board.field.yCount * 32) / 2 then
-        local i = math.floor((x - (board.center.x - (board.field.xCount * 32) / 2)) / 32) + 1
-        local j = math.floor((y - (board.center.y - (board.field.yCount * 32) / 2)) / 32) + 1
+    if x >= self.center.x - (self.mineField.xCount * 32) / 2 and x <= self.center.x + (self.mineField.xCount * 32) / 2
+    and y >= self.center.y - (self.mineField.yCount * 32) / 2 and y <= self.center.y + (self.mineField.yCount * 32) / 2 then
+        local i = math.floor((x - (self.center.x - (self.mineField.xCount * 32) / 2)) / 32) + 1
+        local j = math.floor((y - (self.center.y - (self.mineField.yCount * 32) / 2)) / 32) + 1
         if button == 1 then
-            if board.blockMatrix[i][j].isToggled and not board.blockMatrix[i][j].isFlagged then
-                board.blockMatrix[i][j]:leftClicked()
+            if self.blockMatrix[i][j].isToggled and not self.blockMatrix[i][j].isFlagged then
+                self.blockMatrix[i][j]:leftClicked()
             end
         elseif button == 2 then
-            if board.blockMatrix[i][j].isToggled then
-                board.blockMatrix[i][j]:rightClicked()
+            if self.blockMatrix[i][j].isToggled then
+                self.blockMatrix[i][j]:rightClicked()
             end
         end
     end

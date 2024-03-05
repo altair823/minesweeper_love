@@ -1,5 +1,4 @@
-require "object/mine_block"
-require "object/mine_board"
+require "game/mine_game_handler"
 
 require "resource_enum"
 
@@ -10,17 +9,16 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    board = MineBoard:new(0, 0, 1024, 700, boardAtlas)
-    field = Field:new(20, 20, 80)
-    board:setBlockMatrix(field, cellAtlas, blockAtlas, 32, 32)
+    MineGameHandler = MineGameHandler:new(mineAtlas)
+
 end
 
 function love.draw()
-    board:draw()
+    MineGameHandler:draw()
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
-    board:mouseMoved(x, y)
+    MineGameHandler:mouseMoved(x, y)
 end
 
 function love.mousepressed(x, y, button, istouch)
@@ -28,7 +26,7 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.mousereleased(x, y, button, istouch)
-    board:mouseReleased(x, y, button)    
+    MineGameHandler:mouseReleased(x, y, button)    
 end
 
 function love.quit()

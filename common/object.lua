@@ -13,4 +13,3 @@ function Object:inherit()
     setmetatable(child, self)
     return child
 end
-  
