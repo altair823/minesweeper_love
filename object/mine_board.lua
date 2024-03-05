@@ -3,10 +3,13 @@ require "model/mine_field"
 require "object/mine_block"
 require "object/mine_cell"
 
+require("common/clickable_table")
+
 MineBoard = Sprite:inherit()
 
 function MineBoard:new(x, y, width, height, atlas)
     local board = Sprite.new(self, x, y, width, height, atlas)
+    board.clickableTable = ClickableTable:new()
     return board
 end
 
@@ -20,8 +23,10 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
         for j=1, self.mineField.yCount do
             local cellX = self.center.x - (self.mineField.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.mineField.yCount * height) / 2 + (j - 1) * height
-            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField.mineMatrix[i][j], cellAtlas[self.mineField.mineMatrix[i][j]])
+            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getMineMatrixValue(i, j), cellAtlas[self.mineField:getMineMatrixValue(i, j)])
             self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
+            self.clickableTable:registerClick(self.blockMatrix[i][j], ClickTypeEnum.LEFT)
+            self.clickableTable:registerClick(self.blockMatrix[i][j], ClickTypeEnum.RIGHT)
         end
     end
 end
@@ -70,23 +75,6 @@ function MineBoard:mouseMoved(x, y)
             self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
             prevLoc.i = 0
             prevLoc.j = 0
-        end
-    end
-end
-
-function MineBoard:mouseReleased(x, y, button)
-    if x >= self.center.x - (self.mineField.xCount * 32) / 2 and x <= self.center.x + (self.mineField.xCount * 32) / 2
-    and y >= self.center.y - (self.mineField.yCount * 32) / 2 and y <= self.center.y + (self.mineField.yCount * 32) / 2 then
-        local i = math.floor((x - (self.center.x - (self.mineField.xCount * 32) / 2)) / 32) + 1
-        local j = math.floor((y - (self.center.y - (self.mineField.yCount * 32) / 2)) / 32) + 1
-        if button == 1 then
-            if self.blockMatrix[i][j].isToggled and not self.blockMatrix[i][j].isFlagged then
-                self.blockMatrix[i][j]:leftClicked()
-            end
-        elseif button == 2 then
-            if self.blockMatrix[i][j].isToggled then
-                self.blockMatrix[i][j]:rightClicked()
-            end
         end
     end
 end

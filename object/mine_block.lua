@@ -4,6 +4,7 @@ MineBlock = Sprite:inherit()
 
 function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas)
     local block = Sprite.new(self, x, y, width, height, defaultAtlas)
+    block.toString = "MineBlock"
     block.isToggled = false
     block.isShown = true
     block.isFlagged = false
@@ -32,7 +33,10 @@ function MineBlock:untoggle()
     self.isToggled = false
 end
 
-function MineBlock:leftClicked()
+function MineBlock:leftClicked() 
+    if self.isFlagged then
+        return
+    end
     self.isToggled = false
     self.isShown = false
 end

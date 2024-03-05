@@ -11,6 +11,7 @@ function love.load()
 
     MineGameHandler = MineGameHandler:new(mineAtlas)
 
+
 end
 
 function love.draw()
@@ -26,7 +27,11 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.mousereleased(x, y, button, istouch)
-    MineGameHandler:mouseReleased(x, y, button)    
+    if button == 1 then
+        MineGameHandler:leftClicked(x, y)
+    elseif button == 2 then
+        MineGameHandler:rightClicked(x, y)
+    end 
 end
 
 function love.quit()
