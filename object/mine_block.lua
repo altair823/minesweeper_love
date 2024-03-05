@@ -16,8 +16,6 @@ end
 function MineBlock:draw()
     if self.isToggled then
         love.graphics.setColor(255, 0, 0)
-    else
-        love.graphics.setColor(255, 255, 255)
     end
     if self.isShown then
         love.graphics.draw(self.image, self.quad, self.x, self.y)

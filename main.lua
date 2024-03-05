@@ -9,17 +9,18 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    MineGameHandler = MineGameHandler:new(mineAtlas)
-
+    mineGameHandler = mineGameHandler:new(mineAtlas)
+    mineGameHandler:makeCanvas()
 
 end
 
 function love.draw()
-    MineGameHandler:draw()
+    mineGameHandler:draw()
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
-    MineGameHandler:mouseMoved(x, y)
+    mineGameHandler:mouseMoved(x, y)
+    mineGameHandler:makeCanvas()
 end
 
 function love.mousepressed(x, y, button, istouch)
@@ -28,10 +29,11 @@ end
 
 function love.mousereleased(x, y, button, istouch)
     if button == 1 then
-        MineGameHandler:leftClicked(x, y)
+        mineGameHandler:leftClicked(x, y)
     elseif button == 2 then
-        MineGameHandler:rightClicked(x, y)
+        mineGameHandler:rightClicked(x, y)
     end 
+    mineGameHandler:makeCanvas()
 end
 
 function love.quit()

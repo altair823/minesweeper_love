@@ -7,7 +7,3 @@ function MineCell:new(x, y, width, height, type, atlas)
     cell.type = type
     return cell
 end
-
-function MineCell:draw()
-    love.graphics.draw(self.image, self.quad, self.x, self.y)
-end

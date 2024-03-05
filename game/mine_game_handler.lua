@@ -6,9 +6,9 @@ MineGameButtonEnum = {
     RESTART = 1
 }
 
-MineGameHandler = Object:inherit()
+mineGameHandler = Object:inherit()
 
-function MineGameHandler:new(mineAtlas)
+function mineGameHandler:new(mineAtlas)
     local handler = {}
     setmetatable(handler, self)
     self.__index = self
@@ -36,11 +36,11 @@ function MineGameHandler:new(mineAtlas)
     return handler
 end
 
-function MineGameHandler:isInputBlocked()
+function mineGameHandler:isInputBlocked()
     return self.isGameOver
 end
 
-function MineGameHandler:isMineCellReveal()
+function mineGameHandler:isMineCellReveal()
     for i=1, #self.mineField.mineLocation do
         if not self.mineBoard.blockMatrix[self.mineField.mineLocation[i].x][self.mineField.mineLocation[i].y].isShown then
             return true
@@ -49,7 +49,7 @@ function MineGameHandler:isMineCellReveal()
     return false
 end
 
-function MineGameHandler:restart()
+function mineGameHandler:restart()
     self.mineField = MineField:new(20, 20, 80)
     self.mineBoard = MineBoard:new(0, 0, 1024, 700, self.mineAtlas.boardAtlas)
     self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, 32, 32)
@@ -58,38 +58,37 @@ function MineGameHandler:restart()
     self.mineBoard:activate()
 end
 
-function MineGameHandler:draw()
-    self.canvas = love.graphics.newCanvas(1024, 1024)
+function mineGameHandler:makeCanvas()
+    self.canvas = love.graphics.newCanvas(1024, 700)
     love.graphics.setCanvas(self.canvas)
-    love.graphics.clear()
-    love.graphics.setColor(255,255,255)
-    love.graphics.push()
     self.mineBoard:draw()
     self.restartButton:draw()
     self.gameoverIndicator:draw()
-    love.graphics.pop()
     love.graphics.setCanvas()
-    love.graphics.draw(self.canvas, self.x, self.y)
 end
 
-function MineGameHandler:leftClicked(x, y)
+function mineGameHandler:draw()
+    love.graphics.draw(self.canvas, 0, 0)
+end
+
+function mineGameHandler:leftClicked(x, y)
     self.buttonClickTable:leftClicked(x, y)
     self.mineBoard.clickableTable:leftClicked(x, y)
     self:blockOpenEvent()
 end
 
-function MineGameHandler:rightClicked(x, y)
+function mineGameHandler:rightClicked(x, y)
     self.mineBoard.clickableTable:rightClicked(x, y)
 end
 
-function MineGameHandler:mouseMoved(x, y)
+function mineGameHandler:mouseMoved(x, y)
     if self:isInputBlocked() then
         return
     end
     self.mineBoard:mouseMoved(x, y)
 end
 
-function MineGameHandler:blockOpenEvent()
+function mineGameHandler:blockOpenEvent()
     if #self.mineBoard.openedCells == 0 then
         return
     end
@@ -107,7 +106,7 @@ function MineGameHandler:blockOpenEvent()
     end
 end
 
-function MineGameHandler:openAdjacent(x, y)
+function mineGameHandler:openAdjacent(x, y)
     local adjacents = {
         {0, 1},
         {0, -1},
