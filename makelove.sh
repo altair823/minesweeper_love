@@ -4,4 +4,7 @@ zip -r minesweeper_love.love \
 *.lua \
 object \
 model \
-resource
+game \
+common \
+resource \
+original_resource

@@ -23,7 +23,7 @@ function MineGameHandler:new(mineAtlas)
         handler.mineBoard.center.y - 32, 
         64, 64, 
         mineAtlas.buttonAtlas[MineGameButtonEnum.RESTART])
-    handler.buttonClickTable:registerClick(handler.restartButton, ClickTypeEnum.LEFT)
+    handler.buttonClickTable:registerClick(ClickTypeEnum.LEFT, handler.restartButton)
     handler.restartButton.leftClicked = function()
         print("Restarting")
         handler:restart()
@@ -55,7 +55,7 @@ function MineGameHandler:restart()
     self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, 32, 32)
     self.isGameOver = false
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notGameover)
-    self.mineBoard.clickableTable:activate()
+    self.mineBoard:activate()
 end
 
 function MineGameHandler:draw()
@@ -75,12 +75,7 @@ end
 function MineGameHandler:leftClicked(x, y)
     self.buttonClickTable:leftClicked(x, y)
     self.mineBoard.clickableTable:leftClicked(x, y)
-    if not self.isGameOver and self:isMineCellReveal() then
-        self.isGameOver = true
-        print("Game Over")
-        self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
-        self.mineBoard.clickableTable:deactivate()
-    end
+    self:blockOpenEvent()
 end
 
 function MineGameHandler:rightClicked(x, y)
@@ -92,4 +87,49 @@ function MineGameHandler:mouseMoved(x, y)
         return
     end
     self.mineBoard:mouseMoved(x, y)
+end
+
+function MineGameHandler:blockOpenEvent()
+    if #self.mineBoard.openedCells == 0 then
+        return
+    end
+    if not self.isGameOver and self:isMineCellReveal() then
+        self.isGameOver = true
+        print("Game Over")
+        self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
+        self.mineBoard:deactivate()
+    else
+        i = self.mineBoard.openedCells[#self.mineBoard.openedCells].i
+        j = self.mineBoard.openedCells[#self.mineBoard.openedCells].j
+        if self.mineField:getMineMatrixValue(i, j) == 0 then
+            self:openAdjacent(i, j)
+        end
+    end
+end
+
+function MineGameHandler:openAdjacent(x, y)
+    local adjacents = {
+        {0, 1},
+        {0, -1},
+        {1, 0},
+        {-1, 0},
+        {1, 1},
+        {1, -1},
+        {-1, 1},
+        {-1, -1}
+    }
+    for i=1, #adjacents do
+        local newX = x + adjacents[i][1]
+        local newY = y + adjacents[i][2]
+        -- Open the adjacent cell if it is not a mine and not opened
+        -- If it is a empty cell, call this function recursively
+        if newX >= 1 and newX <= self.mineField.xCount and newY >= 1 and newY <= self.mineField.yCount then
+            if self.mineField:getMineMatrixValue(newX, newY) ~= MineEnum.MINE and self.mineBoard.blockMatrix[newX][newY].isShown then
+                self.mineBoard:openBlock(newX, newY)
+                if self.mineField:getMineMatrixValue(newX, newY) == MineEnum.EMPTY then
+                    self:openAdjacent(newX, newY)
+                end
+            end
+        end
+    end
 end

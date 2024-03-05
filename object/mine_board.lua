@@ -10,25 +10,44 @@ MineBoard = Sprite:inherit()
 function MineBoard:new(x, y, width, height, atlas)
     local board = Sprite.new(self, x, y, width, height, atlas)
     board.clickableTable = ClickableTable:new()
+    self.openedCells = {}
     return board
+end
+
+function MineBoard:getLastOpenedCells()
+    return self.openedCells[#self.openedCells]
+end
+
+function MineBoard:activate()
+    self.clickableTable:activate()
+end
+
+function MineBoard:deactivate()
+    self.clickableTable:deactivate()
 end
 
 function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, height)
     self.mineField = mineField
-    self.numberMatrix = {}
+    self.cellMatrix = {}
     self.blockMatrix = {}
     for i=1, self.mineField.xCount do
-        self.numberMatrix[i] = {}
+        self.cellMatrix[i] = {}
         self.blockMatrix[i] = {}
         for j=1, self.mineField.yCount do
             local cellX = self.center.x - (self.mineField.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.mineField.yCount * height) / 2 + (j - 1) * height
-            self.numberMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getMineMatrixValue(i, j), cellAtlas[self.mineField:getMineMatrixValue(i, j)])
+            self.cellMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getMineMatrixValue(i, j), cellAtlas[self.mineField:getMineMatrixValue(i, j)])
             self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
-            self.clickableTable:registerClick(self.blockMatrix[i][j], ClickTypeEnum.LEFT)
-            self.clickableTable:registerClick(self.blockMatrix[i][j], ClickTypeEnum.RIGHT)
+            self.clickableTable:registerClick(ClickTypeEnum.LEFT, self.blockMatrix[i][j], function ()
+                table.insert(self.openedCells, {i = i, j = j})
+            end)
+            self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j])
         end
     end
+end
+
+function MineBoard:openBlock(i, j)
+    self.blockMatrix[i][j]:leftClicked()
 end
 
 function MineBoard:draw()
@@ -38,9 +57,9 @@ function MineBoard:draw()
 end
 
 function MineBoard:draw_numbers()
-    for i=1, #self.numberMatrix do
-        for j=1, #self.numberMatrix[i] do
-            self.numberMatrix[i][j]:draw()
+    for i=1, #self.cellMatrix do
+        for j=1, #self.cellMatrix[i] do
+            self.cellMatrix[i][j]:draw()
         end
     end
 end

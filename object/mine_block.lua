@@ -33,7 +33,7 @@ function MineBlock:untoggle()
     self.isToggled = false
 end
 
-function MineBlock:leftClicked() 
+function MineBlock:open()
     if self.isFlagged then
         return
     end
@@ -41,7 +41,11 @@ function MineBlock:leftClicked()
     self.isShown = false
 end
 
-function MineBlock:rightClicked()
+function MineBlock:leftClicked()
+    self:open()
+end
+
+function MineBlock:toggleFlag()
     if self.isFlagged then
         self.isFlagged = false
         self:changeAtlas(self.width, self.height, self.defaultAtlas)
@@ -49,4 +53,8 @@ function MineBlock:rightClicked()
         self.isFlagged = true
         self:changeAtlas(self.width, self.height, self.flagAtlas)
     end
+end
+
+function MineBlock:rightClicked()
+    self:toggleFlag()
 end
