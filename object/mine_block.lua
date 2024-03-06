@@ -44,6 +44,9 @@ function MineBlock:leftClicked()
 end
 
 function MineBlock:toggleFlag()
+    if not self.isShown then
+        return
+    end
     if self.isFlagged then
         self.isFlagged = false
         self:changeAtlas(self.width, self.height, self.defaultAtlas)

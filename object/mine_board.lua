@@ -18,6 +18,10 @@ function MineBoard:getLastOpenedCells()
     return self.openedCells[#self.openedCells]
 end
 
+function MineBoard:isCellNumber(i, j)
+    return self.cellMatrix[i][j].value ~= MineEnum.MINE and self.cellMatrix[i][j].value ~= MineEnum.EMPTY
+end
+
 function MineBoard:activate()
     self.clickableTable:activate()
 end
@@ -36,9 +40,16 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
         for j=1, self.mineField.yCount do
             local cellX = self.center.x - (self.mineField.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.mineField.yCount * height) / 2 + (j - 1) * height
-            self.cellMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getMineMatrixValue(i, j), cellAtlas[self.mineField:getMineMatrixValue(i, j)])
+            self.cellMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getValue(i, j), cellAtlas[self.mineField:getValue(i, j)])
             self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG])
+        end
+    end
+    for i=1, #self.cellMatrix do
+        for j=1, #self.cellMatrix[i] do
             self.clickableTable:registerClick(ClickTypeEnum.LEFT, self.blockMatrix[i][j], function ()
+                if not self.blockMatrix[i][j].isShown then 
+                    self:tryOpenAdjacent(i, j)
+                end
                 table.insert(self.openedCells, {i = i, j = j})
             end)
             self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j])
@@ -48,6 +59,71 @@ end
 
 function MineBoard:openBlock(i, j)
     self.blockMatrix[i][j]:leftClicked()
+end
+
+function MineBoard:openAdjacentOfEmpty(x, y)
+    local adjacents = {
+        {0, 1},
+        {0, -1},
+        {1, 0},
+        {-1, 0},
+        {1, 1},
+        {1, -1},
+        {-1, 1},
+        {-1, -1}
+    }
+    if self.mineField:getValue(x, y) == MineEnum.EMPTY then
+        for i=1, #adjacents do
+            local newX = x + adjacents[i][1]
+            local newY = y + adjacents[i][2]
+            if newX >= 1 and newX <= self.mineField.xCount and newY >= 1 and newY <= self.mineField.yCount then
+                if not self.blockMatrix[newX][newY].isFlagged 
+                and self.blockMatrix[newX][newY].isShown then
+                    self:openBlock(newX, newY)
+                    if self.mineField:getValue(newX, newY) == MineEnum.EMPTY then
+                        self:openAdjacentOfEmpty(newX, newY)
+                    end
+                end
+            end
+        end
+    end
+end
+
+function MineBoard:tryOpenAdjacent(x, y)
+    local adjacents = {
+        {0, 1},
+        {0, -1},
+        {1, 0},
+        {-1, 0},
+        {1, 1},
+        {1, -1},
+        {-1, 1},
+        {-1, -1}
+    }
+    local adjacentFlagCount = 0
+    for i=1, #adjacents do
+        local newX = x + adjacents[i][1]
+        local newY = y + adjacents[i][2]
+        if newX >= 1 and newX <= self.mineField.xCount and newY >= 1 and newY <= self.mineField.yCount then
+            if self.blockMatrix[newX][newY].isFlagged then
+                adjacentFlagCount = adjacentFlagCount + 1
+            end
+        end
+    end
+    if adjacentFlagCount == self.mineField:getValue(x, y) then
+        for i=1, #adjacents do
+            local newX = x + adjacents[i][1]
+            local newY = y + adjacents[i][2]
+            if newX >= 1 and newX <= self.mineField.xCount and newY >= 1 and newY <= self.mineField.yCount then
+                if not self.blockMatrix[newX][newY].isFlagged then
+                    self:openBlock(newX, newY)
+                    if self.mineField:getValue(newX, newY) == MineEnum.EMPTY then
+                        self:openAdjacentOfEmpty(newX, newY)
+                    end
+                end
+            end
+        end
+    end
 end
 
 function MineBoard:draw()

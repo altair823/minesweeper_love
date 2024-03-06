@@ -1,6 +1,5 @@
 require "common/object"
 
-
 MineEnum = {
     MINE = 'x',
     EMPTY = 0,
@@ -44,7 +43,11 @@ function MineField:new(xCount, yCount, mineCount)
             field.mineMatrix[i][j] = {value = MineEnum.EMPTY, state = CellStateEnum.HIDDEN}
         end
     end
-    math.randomseed(os.time())
+    if DEBUG then
+        math.randomseed(1)
+    else 
+        math.randomseed(os.time())
+    end
     for i=1, field.mineCount do
         local x = math.random(1, field.xCount)
         local y = math.random(1, field.yCount)
@@ -102,14 +105,14 @@ function MineField:printTest()
     print("Mine count: " .. mineC)
 end
 
-function MineField:getMineMatrixValue(x, y)
+function MineField:getValue(x, y)
     return self.mineMatrix[x][y].value
 end
 
-function MineField:getMineMatrixState(x, y)
+function MineField:getState(x, y)
     return self.mineMatrix[x][y].state
 end
 
-function MineField:setMineMatrixState(x, y, state)
+function MineField:setState(x, y, state)
     self.mineMatrix[x][y].state = state
 end

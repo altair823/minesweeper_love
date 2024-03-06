@@ -6,14 +6,14 @@ MineGameButtonEnum = {
     RESTART = 1
 }
 
-mineGameHandler = Object:inherit()
+MineGameHandler = Object:inherit()
 
-function mineGameHandler:new(mineAtlas)
+function MineGameHandler:new(mineAtlas, width, height, mineCount)
     local handler = {}
     setmetatable(handler, self)
     self.__index = self
     handler.mineAtlas = mineAtlas
-    handler.mineField = MineField:new(20, 20, 80)
+    handler.mineField = MineField:new(width, height, mineCount)
     handler.mineBoard = MineBoard:new(0, 0, 1024, 700, mineAtlas.boardAtlas)
     handler.mineBoard:setBlockMatrix(handler.mineField, mineAtlas.cellAtlas, mineAtlas.blockAtlas, 32, 32)
     handler.isGameOver = false
@@ -36,11 +36,11 @@ function mineGameHandler:new(mineAtlas)
     return handler
 end
 
-function mineGameHandler:isInputBlocked()
-    return self.isGameOver
+function MineGameHandler:isInputBlocked()
+    return self.isGameOver or self.isWin
 end
 
-function mineGameHandler:isMineCellReveal()
+function MineGameHandler:isMineCellReveal()
     for i=1, #self.mineField.mineLocation do
         if not self.mineBoard.blockMatrix[self.mineField.mineLocation[i].x][self.mineField.mineLocation[i].y].isShown then
             return true
@@ -49,86 +49,87 @@ function mineGameHandler:isMineCellReveal()
     return false
 end
 
-function mineGameHandler:restart()
-    self.mineField = MineField:new(20, 20, 80)
+function MineGameHandler:restart()
+    local width = self.mineField.xCount
+    local height = self.mineField.yCount
+    local mineCount = self.mineField.mineCount
+    self.mineField = MineField:new(width, height, mineCount)
     self.mineBoard = MineBoard:new(0, 0, 1024, 700, self.mineAtlas.boardAtlas)
     self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, 32, 32)
     self.isGameOver = false
+    self.isWin = false
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notGameover)
     self.mineBoard:activate()
 end
 
-function mineGameHandler:makeCanvas()
-    self.canvas = love.graphics.newCanvas(1024, 700)
-    love.graphics.setCanvas(self.canvas)
+function MineGameHandler:gameover()
+    self.isGameOver = true
+    print("Game Over")
+    self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
+    self.mineBoard:deactivate()
+end
+
+function MineGameHandler:checkWin()
+    local count = 0
+    for i=1, #self.mineBoard.blockMatrix do
+        for j=1, #self.mineBoard.blockMatrix[i] do
+            if self.mineBoard.blockMatrix[i][j].isShown then
+                count = count + 1
+            end
+        end
+    end
+    if count == self.mineField.mineCount then
+        print("You Win!")
+        self.isWin = true
+        self.mineBoard:deactivate()
+    end
+end
+
+
+function MineGameHandler:makeCanvas()
+    -- self.canvas = love.graphics.newCanvas(1024, 700)
+    -- love.graphics.setCanvas(self.canvas)
+    -- love.graphics.setCanvas()
+end
+
+function MineGameHandler:draw()
+    -- love.graphics.draw(self.canvas, 0, 0)
+    
     self.mineBoard:draw()
     self.restartButton:draw()
     self.gameoverIndicator:draw()
-    love.graphics.setCanvas()
 end
 
-function mineGameHandler:draw()
-    love.graphics.draw(self.canvas, 0, 0)
-end
-
-function mineGameHandler:leftClicked(x, y)
+function MineGameHandler:leftClicked(x, y)
     self.buttonClickTable:leftClicked(x, y)
     self.mineBoard.clickableTable:leftClicked(x, y)
     self:blockOpenEvent()
+    self:checkWin()
 end
 
-function mineGameHandler:rightClicked(x, y)
+function MineGameHandler:rightClicked(x, y)
     self.mineBoard.clickableTable:rightClicked(x, y)
 end
 
-function mineGameHandler:mouseMoved(x, y)
+function MineGameHandler:mouseMoved(x, y)
     if self:isInputBlocked() then
         return
     end
     self.mineBoard:mouseMoved(x, y)
 end
 
-function mineGameHandler:blockOpenEvent()
+function MineGameHandler:blockOpenEvent()
     if #self.mineBoard.openedCells == 0 then
         return
     end
     if not self.isGameOver and self:isMineCellReveal() then
-        self.isGameOver = true
-        print("Game Over")
-        self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
-        self.mineBoard:deactivate()
+        self:gameover()
     else
-        i = self.mineBoard.openedCells[#self.mineBoard.openedCells].i
-        j = self.mineBoard.openedCells[#self.mineBoard.openedCells].j
-        if self.mineField:getMineMatrixValue(i, j) == 0 then
-            self:openAdjacent(i, j)
+        local i = self.mineBoard.openedCells[#self.mineBoard.openedCells].i
+        local j = self.mineBoard.openedCells[#self.mineBoard.openedCells].j
+        if self.mineField:getValue(i, j) ~= MineEnum.MINE then
+            self.mineBoard:openAdjacentOfEmpty(i, j)
         end
     end
 end
 
-function mineGameHandler:openAdjacent(x, y)
-    local adjacents = {
-        {0, 1},
-        {0, -1},
-        {1, 0},
-        {-1, 0},
-        {1, 1},
-        {1, -1},
-        {-1, 1},
-        {-1, -1}
-    }
-    for i=1, #adjacents do
-        local newX = x + adjacents[i][1]
-        local newY = y + adjacents[i][2]
-        -- Open the adjacent cell if it is not a mine and not opened
-        -- If it is a empty cell, call this function recursively
-        if newX >= 1 and newX <= self.mineField.xCount and newY >= 1 and newY <= self.mineField.yCount then
-            if self.mineField:getMineMatrixValue(newX, newY) ~= MineEnum.MINE and self.mineBoard.blockMatrix[newX][newY].isShown then
-                self.mineBoard:openBlock(newX, newY)
-                if self.mineField:getMineMatrixValue(newX, newY) == MineEnum.EMPTY then
-                    self:openAdjacent(newX, newY)
-                end
-            end
-        end
-    end
-end

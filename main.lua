@@ -1,3 +1,5 @@
+require "common/conf"
+
 require "game/mine_game_handler"
 
 require "resource_enum"
@@ -9,7 +11,7 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    mineGameHandler = mineGameHandler:new(mineAtlas)
+    mineGameHandler = MineGameHandler:new(mineAtlas, 10, 10, 5)
     mineGameHandler:makeCanvas()
 
 end
