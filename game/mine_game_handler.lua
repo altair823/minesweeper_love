@@ -19,8 +19,8 @@ function MineGameHandler:new(mineAtlas, width, height, mineCount)
     handler.isGameOver = false
     handler.buttonClickTable = ClickableTable:new()
     handler.restartButton = Sprite:new(
-        math.floor(handler.mineBoard.width / 8) - 32, 
-        handler.mineBoard.center.y - 32, 
+        handler.mineBoard.center.x - 32,
+        16,  
         64, 64, 
         mineAtlas.buttonAtlas[MineGameButtonEnum.RESTART])
     handler.buttonClickTable:registerClick(ClickTypeEnum.LEFT, handler.restartButton)
@@ -29,10 +29,15 @@ function MineGameHandler:new(mineAtlas, width, height, mineCount)
         handler:restart()
     end
     handler.gameoverIndicator = Sprite:new(
-        math.floor(handler.mineBoard.width / 8) - 32, 
-        handler.mineBoard.center.y - 128, 
+        handler.mineBoard.center.x - 128, 
+        16, 
         64, 64, 
         mineAtlas.indicatorAtlas.notGameover)
+    handler.winIndicator = Sprite:new(
+        handler.mineBoard.center.x + 64,
+        16, 
+        64, 64, 
+        mineAtlas.indicatorAtlas.notWin)
     return handler
 end
 
@@ -59,6 +64,7 @@ function MineGameHandler:restart()
     self.isGameOver = false
     self.isWin = false
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notGameover)
+    self.winIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notWin)
     self.mineBoard:activate()
 end
 
@@ -81,6 +87,7 @@ function MineGameHandler:checkWin()
     if count == self.mineField.mineCount then
         print("You Win!")
         self.isWin = true
+        self.winIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.win)
         self.mineBoard:deactivate()
     end
 end
@@ -98,6 +105,7 @@ function MineGameHandler:draw()
     self.mineBoard:draw()
     self.restartButton:draw()
     self.gameoverIndicator:draw()
+    self.winIndicator:draw()
 end
 
 function MineGameHandler:leftClicked(x, y)

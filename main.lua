@@ -11,7 +11,7 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    mineGameHandler = MineGameHandler:new(mineAtlas, 10, 10, 5)
+    mineGameHandler = MineGameHandler:new(mineAtlas, 30, 16, 99)
     mineGameHandler:makeCanvas()
 
 end

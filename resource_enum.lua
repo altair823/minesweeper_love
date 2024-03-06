@@ -16,6 +16,8 @@ local mineImages = {
     restartImage = love.graphics.newImage("original_resource/mine_restart.png"),
     gameoverToggledImage = love.graphics.newImage("original_resource/mine_gameover_toggled.png"),
     gameoverUntoggledImage = love.graphics.newImage("original_resource/mine_gameover_untoggled.png"),
+    winToggleImage = love.graphics.newImage("original_resource/mine_win_toggled.png"),
+    winUntoggleImage = love.graphics.newImage("original_resource/mine_win_untoggled.png"),
 }
 mineAtlas = {
     blockAtlas = {
@@ -41,5 +43,7 @@ mineAtlas = {
     indicatorAtlas = {
         gameover = {image = mineImages.gameoverToggledImage, quad = love.graphics.newQuad(0, 0, 64, 64, mineImages.gameoverToggledImage)},
         notGameover = {image = mineImages.gameoverUntoggledImage, quad = love.graphics.newQuad(0, 0, 64, 64, mineImages.gameoverUntoggledImage)},
+        win = {image = mineImages.winToggleImage, quad = love.graphics.newQuad(0, 0, 64, 64, mineImages.winToggleImage)},
+        notWin = {image = mineImages.winUntoggleImage, quad = love.graphics.newQuad(0, 0, 64, 64, mineImages.winUntoggleImage)},
     }
 }
