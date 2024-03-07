@@ -10,17 +10,17 @@ MineBoard = Sprite:inherit()
 function MineBoard:new(x, y, width, height, atlas, spriteTable)
     local board = Sprite.new(self, x, y, width, height, atlas, spriteTable, "MineBoard")
     board.clickableTable = ClickableTable:new(
-        -- function (cx, cy)
-        --     local blockWidth = self.blockMatrix[1][1].width
-        --     local blockHeight = self.blockMatrix[1][1].height
-        --     if cx >= board.center.x - (board.mineField.xCount * blockWidth) / 2 and cx <= board.center.x + (board.mineField.xCount * blockWidth) / 2 - 1
-        --     and cy >= board.center.y - (board.mineField.yCount * blockHeight) / 2 and cy <= board.center.y + (board.mineField.yCount * blockHeight) / 2 - 1 then
-        --         local i = math.floor((cx - (board.center.x - (board.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
-        --         local j = math.floor((cy - (board.center.y - (board.mineField.yCount * blockHeight) / 2)) / blockHeight) + 1
-        --         return (i - 1) * board.mineField.yCount + j
-        --     end
-        --     return nil
-        -- end
+        function (cx, cy)
+            local blockWidth = board.scale.x * 32
+            local blockHeight = board.scale.y * 32
+            if cx >= board.center.x - (board.mineField.xCount * blockWidth) / 2 and cx <= board.center.x + (board.mineField.xCount * blockWidth) / 2 - 1
+            and cy >= board.center.y - (board.mineField.yCount * blockHeight) / 2 and cy <= board.center.y + (board.mineField.yCount * blockHeight) / 2 - 1 then
+                local i = math.floor((cx - (board.center.x - (board.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
+                local j = math.floor((cy - (board.center.y - (board.mineField.yCount * blockHeight) / 2)) / blockHeight) + 1
+                return (i - 1) * board.mineField.yCount + j
+            end
+            return nil
+        end
     )
     board.spriteTable = spriteTable
     self.openedCells = {}
