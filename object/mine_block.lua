@@ -1,9 +1,9 @@
-require "object/sprite"
+require "common/sprite"
 
 MineBlock = Sprite:inherit()
 
-function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas)
-    local block = Sprite.new(self, x, y, width, height, defaultAtlas)
+function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas, spriteTable)
+    local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock" .. x .. y)
     block.toString = "MineBlock"
     block.isToggled = false
     block.isShown = true
@@ -18,7 +18,7 @@ function MineBlock:draw()
         love.graphics.setColor(255, 0, 0)
     end
     if self.isShown then
-        love.graphics.draw(self.image, self.quad, self.x, self.y)
+        self.super.draw(self)
     end
     love.graphics.setColor(255, 255, 255)
 end

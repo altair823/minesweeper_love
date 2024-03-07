@@ -4,13 +4,15 @@ require "game/mine_game_handler"
 
 require "resource_enum"
 
+WindowXCenter = math.floor(love.graphics.getWidth()/2)
+WindowYCenter = math.floor(love.graphics.getHeight()/2)
+
 function love.load()
     if PROFILER then
         love.profiler = require('profile') 
         love.profiler.start()
     end
 
-    love.window.setMode(1024, 900, {resizable=false, vsync=false, minwidth=400, minheight=300})
     love.window.setTitle("Mine Sweeper")
 
 
@@ -33,6 +35,7 @@ function love.update(dt)
 end
 
 function love.draw()
+    love.graphics.translate(WindowXCenter, WindowYCenter)
     mineGameHandler:draw()
     if PROFILER then
         love.graphics.print(love.report or "Please wait...")
@@ -40,6 +43,9 @@ function love.draw()
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
+    x = x - WindowXCenter
+    y = y - WindowYCenter
+
     mineGameHandler:mouseMoved(x, y)
     mineGameHandler:makeCanvas()
 end
@@ -49,12 +55,30 @@ function love.mousepressed(x, y, button, istouch)
 end
 
 function love.mousereleased(x, y, button, istouch)
+    x = x - WindowXCenter
+    y = y - WindowYCenter
     if button == 1 then
         mineGameHandler:leftClicked(x, y)
     elseif button == 2 then
         mineGameHandler:rightClicked(x, y)
     end 
     mineGameHandler:makeCanvas()
+end
+
+function love.resize(w, h)
+    
+    local DefaultWindowSize = {width = 1024, height = 700}
+    SpriteRatio = 1
+    if w / h > DefaultWindowSize.width / DefaultWindowSize.height then
+        SpriteRatio = h / DefaultWindowSize.height
+    else
+        SpriteRatio = w / DefaultWindowSize.width
+    end
+    mineGameHandler.mineGameSpriteTable:resizeAllSprite(w, h)
+    
+
+    WindowXCenter = math.floor(love.graphics.getWidth()/2)
+    WindowYCenter = math.floor(love.graphics.getHeight()/2)
 end
 
 function love.quit()

@@ -29,10 +29,6 @@ end
 
 function ClickableTable:registerClick(clickType, sprite, callback)
     local registry = {}
-    registry.x = sprite.x
-    registry.y = sprite.y
-    registry.width = sprite.width
-    registry.height = sprite.height
     registry.sprite = sprite
     registry.callback = callback or nil
     if clickType == "left" then
@@ -57,8 +53,8 @@ function ClickableTable:leftClicked(x, y)
         end
     end
     for i=1, #self.leftClickRegistry do
-        if x >= self.leftClickRegistry[i].x and x <= self.leftClickRegistry[i].x + self.leftClickRegistry[i].width - 1
-        and y >= self.leftClickRegistry[i].y and y <= self.leftClickRegistry[i].y + self.leftClickRegistry[i].height - 1 then
+        if x >= self.leftClickRegistry[i].sprite.x and x <= self.leftClickRegistry[i].sprite.x + self.leftClickRegistry[i].sprite.width - 1
+        and y >= self.leftClickRegistry[i].sprite.y and y <= self.leftClickRegistry[i].sprite.y + self.leftClickRegistry[i].sprite.height - 1 then
             if self.leftClickRegistry[i].callback then
                 self.leftClickRegistry[i].callback()
             end
@@ -82,8 +78,8 @@ function ClickableTable:rightClicked(x, y)
         end
     end
     for i=1, #self.rightClickRegistry do
-        if x >= self.rightClickRegistry[i].x and x <= self.rightClickRegistry[i].x + self.rightClickRegistry[i].width - 1
-        and y >= self.rightClickRegistry[i].y and y <= self.rightClickRegistry[i].y + self.rightClickRegistry[i].height - 1 then
+        if x >= self.rightClickRegistry[i].sprite.x and x <= self.rightClickRegistry[i].sprite.x + self.rightClickRegistry[i].sprite.width - 1
+        and y >= self.rightClickRegistry[i].sprite.y and y <= self.rightClickRegistry[i].sprite.y + self.rightClickRegistry[i].sprite.height - 1 then
             if self.rightClickRegistry[i].callback then
                 self.rightClickRegistry[i].callback()
             end
