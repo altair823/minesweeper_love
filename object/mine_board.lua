@@ -9,7 +9,17 @@ MineBoard = Sprite:inherit()
 
 function MineBoard:new(x, y, width, height, atlas)
     local board = Sprite.new(self, x, y, width, height, atlas)
-    board.clickableTable = ClickableTable:new()
+    board.clickableTable = ClickableTable:new(
+        function (x, y)
+            if x >= board.center.x - (board.mineField.xCount * 32) / 2 and x <= board.center.x + (board.mineField.xCount * 32) / 2 - 1
+            and y >= board.center.y - (board.mineField.yCount * 32) / 2 and y <= board.center.y + (board.mineField.yCount * 32) / 2 - 1 then
+                local i = math.floor((x - (board.center.x - (board.mineField.xCount * 32) / 2)) / 32) + 1
+                local j = math.floor((y - (board.center.y - (board.mineField.yCount * 32) / 2)) / 32) + 1
+                return (i - 1) * board.mineField.yCount + j
+            end
+            return nil
+        end
+    )
     self.openedCells = {}
     return board
 end
@@ -151,8 +161,6 @@ end
 prevLoc = {i = 0, j = 0}
 
 function MineBoard:mouseMoved(x, y)
-    mouseLocation.x = x
-    mouseLocation.y = y
     if x >= self.center.x - (self.mineField.xCount * 32) / 2 and x <= self.center.x + (self.mineField.xCount * 32) / 2 - 1
     and y >= self.center.y - (self.mineField.yCount * 32) / 2 and y <= self.center.y + (self.mineField.yCount * 32) / 2 - 1 then
         local i = math.floor((x - (self.center.x - (self.mineField.xCount * 32) / 2)) / 32) + 1

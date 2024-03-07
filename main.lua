@@ -4,9 +4,12 @@ require "game/mine_game_handler"
 
 require "resource_enum"
 
-mouseLocation = {x = 0, y = 0}
-
 function love.load()
+    if PROFILER then
+        love.profiler = require('profile') 
+        love.profiler.start()
+    end
+
     love.window.setMode(1024, 900, {resizable=false, vsync=false, minwidth=400, minheight=300})
     love.window.setTitle("Mine Sweeper")
 
@@ -16,8 +19,24 @@ function love.load()
 
 end
 
+if PROFILER then
+    love.frame = 0
+end
+function love.update(dt)
+    if PROFILER then
+        love.frame = love.frame + 1
+        if love.frame%100 == 0 then
+            love.report = love.profiler.report(20)
+            love.profiler.reset()
+        end
+    end
+end
+
 function love.draw()
     mineGameHandler:draw()
+    if PROFILER then
+        love.graphics.print(love.report or "Please wait...")
+    end
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)

@@ -1,1 +1,2 @@
 -- DEBUG = true
+-- PROFILER = true

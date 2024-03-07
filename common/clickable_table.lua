@@ -8,13 +8,14 @@ ClickTypeEnum = {
 
 ClickableTable = Object:inherit()
 
-function ClickableTable:new()
+function ClickableTable:new(findFunction)
     local clickable = {}
     setmetatable(clickable, self)
     self.__index = self
     clickable.isActive = true
     clickable.leftClickRegistry = {}
     clickable.rightClickRegistry = {}
+    clickable.findFunction = findFunction or nil
     return clickable
 end
 
@@ -45,6 +46,16 @@ function ClickableTable:leftClicked(x, y)
     if not self.isActive then
         return
     end
+    if self.findFunction then
+        local index = self.findFunction(x, y)
+        if index and self.leftClickRegistry[index] then
+            if self.leftClickRegistry[index].callback then
+                self.leftClickRegistry[index].callback()
+            end
+            self.leftClickRegistry[index].sprite:leftClicked()
+            return
+        end
+    end
     for i=1, #self.leftClickRegistry do
         if x >= self.leftClickRegistry[i].x and x <= self.leftClickRegistry[i].x + self.leftClickRegistry[i].width - 1
         and y >= self.leftClickRegistry[i].y and y <= self.leftClickRegistry[i].y + self.leftClickRegistry[i].height - 1 then
@@ -59,6 +70,16 @@ end
 function ClickableTable:rightClicked(x, y)
     if not self.isActive then
         return
+    end
+    if self.findFunction then
+        local index = self.findFunction(x, y)
+        if index and self.rightClickRegistry[index] then
+            if self.rightClickRegistry[index].callback then
+                self.rightClickRegistry[index].callback()
+            end
+            self.rightClickRegistry[index].sprite:rightClicked()
+            return
+        end
     end
     for i=1, #self.rightClickRegistry do
         if x >= self.rightClickRegistry[i].x and x <= self.rightClickRegistry[i].x + self.rightClickRegistry[i].width - 1
