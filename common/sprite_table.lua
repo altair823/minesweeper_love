@@ -17,7 +17,7 @@ function SpriteTable:addSprite(sprite, name)
 end
 
 function SpriteTable:resizeAllSprite(width, height)
-    local defaultWindowSize = {width = 1024, height = 700}
+    local defaultWindowSize = {width = DefaultWindowSize.width, height = DefaultWindowSize.height}
     local spriteRatio = 1
     if width / height > defaultWindowSize.width / defaultWindowSize.height then
         spriteRatio = height / defaultWindowSize.height

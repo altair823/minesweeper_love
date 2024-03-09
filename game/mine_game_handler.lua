@@ -17,8 +17,14 @@ function MineGameHandler:new(mineAtlas, width, height, mineCount)
     handler.mineAtlas = mineAtlas
     handler.mineGameSpriteTable = SpriteTable:new()
     handler.mineField = MineField:new(width, height, mineCount)
-    handler.mineBoard = MineBoard:new(-math.floor(1024 / 2), -math.floor(700 / 2), 1024, 700, mineAtlas.boardAtlas, handler.mineGameSpriteTable)
-    handler.mineBoard:setBlockMatrix(handler.mineField, mineAtlas.cellAtlas, mineAtlas.blockAtlas, 32, 32)
+    handler.mineBoard = MineBoard:new(
+        -math.floor(DefaultWindowSize.width / 2), 
+        -math.floor(DefaultWindowSize.height / 2), 
+        DefaultWindowSize.width, 
+        DefaultWindowSize.height, 
+        mineAtlas.boardAtlas, 
+        handler.mineGameSpriteTable)
+    handler.mineBoard:setBlockMatrix(handler.mineField, mineAtlas.cellAtlas, mineAtlas.blockAtlas, MineImages.mineCellWidth, MineImages.mineCellHeight)
     handler.isGameOver = false
     handler.buttonClickTable = ClickableTable:new()
     handler:makeButtons()
@@ -30,7 +36,7 @@ function MineGameHandler:makeButtons()
         self.mineBoard.center.x - (32 * self.mineBoard.scale.x), 
         -self.mineBoard.height / 2 + (16 * self.mineBoard.scale.y),
         64, 64, 
-        mineAtlas.buttonAtlas[MineGameButtonEnum.RESTART],
+        MineAtlas.buttonAtlas[MineGameButtonEnum.RESTART],
         self.mineGameSpriteTable,
         "restartButton")
     self.buttonClickTable:registerClick(ClickTypeEnum.LEFT, self.restartButton)
@@ -42,14 +48,14 @@ function MineGameHandler:makeButtons()
         self.mineBoard.center.x - (128 * self.mineBoard.scale.x), 
         -self.mineBoard.height / 2 + (16 * self.mineBoard.scale.y),
         64, 64, 
-        mineAtlas.indicatorAtlas.notGameover,
+        MineAtlas.indicatorAtlas.notGameover,
         self.mineGameSpriteTable, 
         "gameoverIndicator")
     self.winIndicator = Sprite:new(
         self.mineBoard.center.x + (64 * self.mineBoard.scale.x), 
         -self.mineBoard.height / 2 + (16 * self.mineBoard.scale.y),
         64, 64, 
-        mineAtlas.indicatorAtlas.notWin,
+        MineAtlas.indicatorAtlas.notWin,
         self.mineGameSpriteTable,
         "winIndicator")
 end
@@ -57,6 +63,9 @@ end
 function MineGameHandler:initButtons()
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notGameover)
     self.winIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notWin)
+    self.mineGameSpriteTable:addSprite(self.gameoverIndicator, "gameoverIndicator")
+    self.mineGameSpriteTable:addSprite(self.winIndicator, "winIndicator")
+    self.mineGameSpriteTable:addSprite(self.restartButton, "restartButton")
 end
 
 function MineGameHandler:isInputBlocked()
@@ -78,8 +87,14 @@ function MineGameHandler:restart()
     local mineCount = self.mineField.mineCount
     self.mineField = MineField:new(width, height, mineCount)
     self.mineGameSpriteTable = SpriteTable:new()
-    self.mineBoard = MineBoard:new(-math.floor(1024 / 2), -math.floor(700 / 2), 1024, 700, self.mineAtlas.boardAtlas, self.mineGameSpriteTable)
-    self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, 32, 32)
+    self.mineBoard = MineBoard:new(
+        -math.floor(DefaultWindowSize.width / 2), 
+        -math.floor(DefaultWindowSize.height / 2), 
+        DefaultWindowSize.width, 
+        DefaultWindowSize.height, 
+        self.mineAtlas.boardAtlas, 
+        self.mineGameSpriteTable)
+    self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, MineImages.mineCellWidth, MineImages.mineCellHeight)
     self.isGameOver = false
     self.isWin = false
     self:initButtons()
@@ -93,7 +108,7 @@ function MineGameHandler:gameover()
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
     self.mineBoard:deactivate()
     for i=1, #self.mineField.mineLocation do
-        self.mineBoard.blockMatrix[self.mineField.mineLocation[i].x][self.mineField.mineLocation[i].y]:changeAtlas(32, 32, self.mineAtlas.cellAtlas[MineEnum.MINE])
+        self.mineBoard.blockMatrix[self.mineField.mineLocation[i].x][self.mineField.mineLocation[i].y]:changeAtlas(MineImages.mineCellWidth, MineImages.mineCellHeight, self.mineAtlas.cellAtlas[MineEnum.MINE])
     end
 end
 

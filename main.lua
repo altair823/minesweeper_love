@@ -16,7 +16,7 @@ function love.load()
     love.window.setTitle("Mine Sweeper")
 
 
-    mineGameHandler = MineGameHandler:new(mineAtlas, 30, 16, 99)
+    mineGameHandler = MineGameHandler:new(MineAtlas, 30, 16, 99)
     mineGameHandler:makeCanvas()
 
 end
@@ -67,7 +67,7 @@ end
 
 function love.resize(w, h)
     
-    local DefaultWindowSize = {width = 1024, height = 700}
+    local DefaultWindowSize = {width = 1600, height = 900}
     SpriteRatio = 1
     if w / h > DefaultWindowSize.width / DefaultWindowSize.height then
         SpriteRatio = h / DefaultWindowSize.height

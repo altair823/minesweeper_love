@@ -11,8 +11,8 @@ function MineBoard:new(x, y, width, height, atlas, spriteTable)
     local board = Sprite.new(self, x, y, width, height, atlas, spriteTable, "MineBoard")
     board.clickableTable = ClickableTable:new(
         function (cx, cy)
-            local blockWidth = board.scale.x * 32
-            local blockHeight = board.scale.y * 32
+            local blockWidth = board.scale.x * MineImages.mineCellWidth
+            local blockHeight = board.scale.y * MineImages.mineCellHeight
             if cx >= board.center.x - (board.mineField.xCount * blockWidth) / 2 and cx <= board.center.x + (board.mineField.xCount * blockWidth) / 2 - 1
             and cy >= board.center.y - (board.mineField.yCount * blockHeight) / 2 and cy <= board.center.y + (board.mineField.yCount * blockHeight) / 2 - 1 then
                 local i = math.floor((cx - (board.center.x - (board.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
