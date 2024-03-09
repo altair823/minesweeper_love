@@ -53,8 +53,16 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
         for j=1, self.mineField.yCount do
             local cellX = self.center.x - (self.mineField.xCount * width) / 2 + (i - 1) * width
             local cellY = self.center.y - (self.mineField.yCount * height) / 2 + (j - 1) * height
-            self.cellMatrix[i][j] = MineCell:new(cellX, cellY, width, height, self.mineField:getValue(i, j), cellAtlas[self.mineField:getValue(i, j)], self.spriteTable)
-            self.blockMatrix[i][j] = MineBlock:new(cellX, cellY, width, height, blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG], self.spriteTable)
+            self.cellMatrix[i][j] = MineCell:new(
+                cellX, cellY, width, height, 
+                self.mineField:getValue(i, j), 
+                cellAtlas[self.mineField:getValue(i, j)], 
+                self.spriteTable, i, j)
+            self.blockMatrix[i][j] = MineBlock:new(
+                cellX, cellY, width, height, 
+                blockAtlas[BlockEnum.DEFAULT], 
+                blockAtlas[BlockEnum.FLAG], 
+                self.spriteTable, i, j)
         end
     end
     for i=1, #self.cellMatrix do

@@ -2,8 +2,8 @@ require "common/sprite"
 
 MineBlock = Sprite:inherit()
 
-function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas, spriteTable)
-    local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock" .. x .. y)
+function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas, spriteTable, i, j)
+    local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock " .. i .. " " .. j)
     block.toString = "MineBlock"
     block.isToggled = false
     block.isShown = true

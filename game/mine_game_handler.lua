@@ -54,6 +54,11 @@ function MineGameHandler:makeButtons()
         "winIndicator")
 end
 
+function MineGameHandler:initButtons()
+    self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notGameover)
+    self.winIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.notWin)
+end
+
 function MineGameHandler:isInputBlocked()
     return self.isGameOver or self.isWin
 end
@@ -77,7 +82,7 @@ function MineGameHandler:restart()
     self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, 32, 32)
     self.isGameOver = false
     self.isWin = false
-    self:makeButtons()
+    self:initButtons()
     self.mineGameSpriteTable:resizeAllSprite(love.graphics.getWidth(), love.graphics.getHeight())
     self.mineBoard:activate()
 end
@@ -87,6 +92,9 @@ function MineGameHandler:gameover()
     print("Game Over")
     self.gameoverIndicator:changeAtlas(64, 64, self.mineAtlas.indicatorAtlas.gameover)
     self.mineBoard:deactivate()
+    for i=1, #self.mineField.mineLocation do
+        self.mineBoard.blockMatrix[self.mineField.mineLocation[i].x][self.mineField.mineLocation[i].y]:changeAtlas(32, 32, self.mineAtlas.cellAtlas[MineEnum.MINE])
+    end
 end
 
 function MineGameHandler:checkWin()
