@@ -73,7 +73,12 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
                 end
                 table.insert(self.openedCells, {i = i, j = j})
             end)
-            self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j])
+            self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j], function ()
+                if not self.blockMatrix[i][j].isShown then 
+                    self:tryOpenAdjacent(i, j)
+                end
+                table.insert(self.openedCells, {i = i, j = j})
+            end)
         end
     end
 end

@@ -154,6 +154,7 @@ end
 
 function MineGameHandler:rightClicked(x, y)
     self.mineBoard.clickableTable:rightClicked(x, y)
+    self:blockOpenEvent()
 end
 
 function MineGameHandler:mouseMoved(x, y)

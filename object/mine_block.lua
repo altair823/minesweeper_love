@@ -5,6 +5,8 @@ MineBlock = Sprite:inherit()
 function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas, spriteTable, i, j)
     local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock " .. i .. " " .. j)
     block.toString = "MineBlock"
+    block.i = i
+    block.j = j
     block.isToggled = false
     block.isShown = true
     block.isFlagged = false
@@ -32,6 +34,7 @@ function MineBlock:untoggle()
 end
 
 function MineBlock:open()
+    print("open " .. self.i .. " " .. self.j)
     if self.isFlagged then
         return
     end
