@@ -17,13 +17,14 @@ function MineBoard:new(x, y, width, height, atlas, spriteTable)
             and cy >= board.center.y - (board.mineField.yCount * blockHeight) / 2 and cy <= board.center.y + (board.mineField.yCount * blockHeight) / 2 - 1 then
                 local i = math.floor((cx - (board.center.x - (board.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
                 local j = math.floor((cy - (board.center.y - (board.mineField.yCount * blockHeight) / 2)) / blockHeight) + 1
-                return (i - 1) * board.mineField.yCount + j
+                return "MineBlock" .. i .. " " .. j
             end
             return nil
         end
     )
     board.spriteTable = spriteTable
     self.openedCells = {}
+    self.flaggedCells = {}
     return board
 end
 
@@ -74,10 +75,17 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
                 table.insert(self.openedCells, {i = i, j = j})
             end)
             self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j], function ()
-                if not self.blockMatrix[i][j].isShown then 
+                if self.blockMatrix[i][j].isShown then
+                    self.blockMatrix[i][j]:toggleFlag()
+                    if self.blockMatrix[i][j].isFlagged then
+                        self.flaggedCells[i .. " " .. j] = true
+                    else
+                        self.flaggedCells[i .. " " .. j] = nil
+                    end
+                else
                     self:tryOpenAdjacent(i, j)
+                    table.insert(self.openedCells, {i = i, j = j})
                 end
-                table.insert(self.openedCells, {i = i, j = j})
             end)
         end
     end

@@ -3,7 +3,7 @@ require "common/sprite"
 MineBlock = Sprite:inherit()
 
 function MineBlock:new(x, y, width, height, defaultAtlas, flagAtlas, spriteTable, i, j)
-    local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock " .. i .. " " .. j)
+    local block = Sprite.new(self, x, y, width, height, defaultAtlas, spriteTable, "MineBlock" .. i .. " " .. j)
     block.toString = "MineBlock"
     block.i = i
     block.j = j
@@ -34,7 +34,6 @@ function MineBlock:untoggle()
 end
 
 function MineBlock:open()
-    print("open " .. self.i .. " " .. self.j)
     if self.isFlagged then
         return
     end
@@ -60,5 +59,5 @@ function MineBlock:toggleFlag()
 end
 
 function MineBlock:rightClicked()
-    self:toggleFlag()
+    -- self:toggleFlag()
 end

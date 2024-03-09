@@ -19,7 +19,8 @@ function Sprite:new(x, y, width, height, atlas, spriteTable, name)
     sprite.quad = atlas.quad
     sprite.image = atlas.image
     sprite.scale = {x = 1, y = 1}
-    spriteTable:addSprite(sprite, name)
+    sprite.name = name
+    spriteTable:addSprite(sprite, sprite.name)
     return sprite
 end
 
@@ -42,11 +43,11 @@ function Sprite:rescale(xScale, yScale)
 end
 
 function Sprite:leftClicked()
-    assert(false, "leftClicked not implemented")
+    -- assert(false, "leftClicked not implemented")
 end
 
 function Sprite:rightClicked()
-    assert(false, "rightClicked not implemented")
+    -- assert(false, "rightClicked not implemented")
 end
 
 function Sprite:draw()

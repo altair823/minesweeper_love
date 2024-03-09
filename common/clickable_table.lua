@@ -31,10 +31,18 @@ function ClickableTable:registerClick(clickType, sprite, callback)
     local registry = {}
     registry.sprite = sprite
     registry.callback = callback or nil
-    if clickType == "left" then
-        table.insert(self.leftClickRegistry, registry)
+    if clickType == "left" then 
+        if self.leftClickRegistry[registry.sprite.name] then
+            assert(false, "Left click for " .. registry.sprite.name .. " already registered")
+        else
+            self.leftClickRegistry[registry.sprite.name] = registry
+        end
     elseif clickType == "right" then
-        table.insert(self.rightClickRegistry, registry)
+        if self.rightClickRegistry[registry.sprite.name] then
+            assert(false, "Right click for " .. registry.sprite.name .. " already registered")
+        else
+            self.rightClickRegistry[registry.sprite.name] = registry
+        end
     end
 end
 
@@ -43,22 +51,22 @@ function ClickableTable:leftClicked(x, y)
         return
     end
     if self.findFunction then
-        local index = self.findFunction(x, y)
-        if index and self.leftClickRegistry[index] then
-            if self.leftClickRegistry[index].callback then
-                self.leftClickRegistry[index].callback()
+        local name = self.findFunction(x, y)
+        if name and self.leftClickRegistry[name] then
+            if self.leftClickRegistry[name].callback then
+                self.leftClickRegistry[name].callback()
             end
-            self.leftClickRegistry[index].sprite:leftClicked()
+            self.leftClickRegistry[name].sprite:leftClicked()
             return
         end
     end
-    for i=1, #self.leftClickRegistry do
-        if x >= self.leftClickRegistry[i].sprite.x and x <= self.leftClickRegistry[i].sprite.x + self.leftClickRegistry[i].sprite.width - 1
-        and y >= self.leftClickRegistry[i].sprite.y and y <= self.leftClickRegistry[i].sprite.y + self.leftClickRegistry[i].sprite.height - 1 then
-            if self.leftClickRegistry[i].callback then
-                self.leftClickRegistry[i].callback()
+    for k, v in pairs(self.leftClickRegistry) do
+        if x >= v.sprite.x and x <= v.sprite.x + v.sprite.width - 1
+        and y >= v.sprite.y and y <= v.sprite.y + v.sprite.height - 1 then
+            if v.callback then
+                v.callback()
             end
-            self.leftClickRegistry[i].sprite:leftClicked()
+            v.sprite:leftClicked()
         end
     end
 end
@@ -68,22 +76,22 @@ function ClickableTable:rightClicked(x, y)
         return
     end
     if self.findFunction then
-        local index = self.findFunction(x, y)
-        if index and self.rightClickRegistry[index] then
-            if self.rightClickRegistry[index].callback then
-                self.rightClickRegistry[index].callback()
+        local name = self.findFunction(x, y)
+        if name and self.rightClickRegistry[name] then
+            if self.rightClickRegistry[name].callback then
+                self.rightClickRegistry[name].callback()
             end
-            self.rightClickRegistry[index].sprite:rightClicked()
+            self.rightClickRegistry[name].sprite:rightClicked()
             return
         end
     end
-    for i=1, #self.rightClickRegistry do
-        if x >= self.rightClickRegistry[i].sprite.x and x <= self.rightClickRegistry[i].sprite.x + self.rightClickRegistry[i].sprite.width - 1
-        and y >= self.rightClickRegistry[i].sprite.y and y <= self.rightClickRegistry[i].sprite.y + self.rightClickRegistry[i].sprite.height - 1 then
-            if self.rightClickRegistry[i].callback then
-                self.rightClickRegistry[i].callback()
+    for k, v in pairs(self.rightClickRegistry) do
+        if x >= v.sprite.x and x <= v.sprite.x + v.sprite.width - 1
+        and y >= v.sprite.y and y <= v.sprite.y + v.sprite.height - 1 then
+            if v.callback then
+                v.callback()
             end
-            self.rightClickRegistry[i].sprite:rightClicked()
+            v.sprite:rightClicked()
         end
     end
 end

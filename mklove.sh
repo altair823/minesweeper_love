@@ -6,5 +6,6 @@ object \
 model \
 game \
 common \
-resource \
-original_resource
+resources \
+original_resources \
+fonts

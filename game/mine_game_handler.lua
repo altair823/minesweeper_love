@@ -28,7 +28,22 @@ function MineGameHandler:new(mineAtlas, width, height, mineCount)
     handler.isGameOver = false
     handler.buttonClickTable = ClickableTable:new()
     handler:makeButtons()
+    handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "NumberFont", 64)
+    handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "TextFont", 28)
     return handler
+end
+
+function MineGameHandler:print()
+    local remainingMine = self.mineField.mineCount - self:countFlaggedCell()
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
+    love.graphics.print("찾지 못한 지뢰", -790 * self.mineBoard.scale.x, -280 * self.mineBoard.scale.y)
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("NumberFont"))
+    love.graphics.print(remainingMine, -730 * self.mineBoard.scale.x, -240 * self.mineBoard.scale.y)
+end
+
+function MineGameHandler:initTexts()
+    self.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "NumberFont", 64)
+    self.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "TextFont", 28)
 end
 
 function MineGameHandler:makeButtons()
@@ -98,6 +113,7 @@ function MineGameHandler:restart()
     self.isGameOver = false
     self.isWin = false
     self:initButtons()
+    self:initTexts()
     self.mineGameSpriteTable:resizeAllSprite(love.graphics.getWidth(), love.graphics.getHeight())
     self.mineBoard:activate()
 end
@@ -129,6 +145,17 @@ function MineGameHandler:checkWin()
     end
 end
 
+function MineGameHandler:countFlaggedCell()
+    local count = 0
+    for k, v in pairs(self.mineBoard.flaggedCells) do
+        if v then
+            count = count + 1
+        end
+    end
+    return count
+    
+end
+
 
 function MineGameHandler:makeCanvas()
     -- self.canvas = love.graphics.newCanvas(1024, 700)
@@ -143,6 +170,7 @@ function MineGameHandler:draw()
     self.restartButton:draw()
     self.gameoverIndicator:draw()
     self.winIndicator:draw()
+    self:print()
 end
 
 function MineGameHandler:leftClicked(x, y)

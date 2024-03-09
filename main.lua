@@ -18,7 +18,6 @@ function love.load()
 
     mineGameHandler = MineGameHandler:new(MineAtlas, 30, 16, 99)
     mineGameHandler:makeCanvas()
-
 end
 
 if PROFILER then
