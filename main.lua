@@ -31,6 +31,7 @@ function love.update(dt)
             love.profiler.reset()
         end
     end
+    mineGameHandler:update(dt)
 end
 
 function love.draw()

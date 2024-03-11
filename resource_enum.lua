@@ -2,7 +2,7 @@ local cwd = love.filesystem.getWorkingDirectory( )
 if love.filesystem.getInfo("original_resources") and not USE_ATLAS then
     MineImages = {
         blockImage = love.graphics.newImage("original_resources/mine_block_40.png"),
-        boardImage = love.graphics.newImage("original_resources/mine_board.png"),
+        boardImage = love.graphics.newImage("original_resources/mine_background_alpha.png"),
         num0Image = love.graphics.newImage("original_resources/mine_num0_40.png"),
         num1Image = love.graphics.newImage("original_resources/mine_num1_40.png"),
         num2Image = love.graphics.newImage("original_resources/mine_num2_40.png"),
@@ -22,6 +22,8 @@ if love.filesystem.getInfo("original_resources") and not USE_ATLAS then
         gameoverUntoggledImage = love.graphics.newImage("original_resources/mine_gameover_untoggled.png"),
         winToggleImage = love.graphics.newImage("original_resources/mine_win_toggled.png"),
         winUntoggleImage = love.graphics.newImage("original_resources/mine_win_untoggled.png"),
+
+        remainingMineWindowImage = love.graphics.newImage("original_resources/mine_remaining_mine_window.png"),
     }
     MineAtlas = {
         blockAtlas = {
@@ -49,6 +51,9 @@ if love.filesystem.getInfo("original_resources") and not USE_ATLAS then
             notGameover = {image = MineImages.gameoverUntoggledImage, quad = love.graphics.newQuad(0, 0, 64, 64, MineImages.gameoverUntoggledImage)},
             win = {image = MineImages.winToggleImage, quad = love.graphics.newQuad(0, 0, 64, 64, MineImages.winToggleImage)},
             notWin = {image = MineImages.winUntoggleImage, quad = love.graphics.newQuad(0, 0, 64, 64, MineImages.winUntoggleImage)},
+        }, 
+        uiAtlas = {
+            remainingMineWindow = {image = MineImages.remainingMineWindowImage, quad = love.graphics.newQuad(0, 0, 200, 157, MineImages.remainingMineWindowImage)},
         }
     }
 else

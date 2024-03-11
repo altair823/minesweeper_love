@@ -20,7 +20,7 @@ Sprite = Object:inherit()
     spriteTable: sprite table to add the sprite for scaling
     name: name of the sprite - string
 ]]--
-function Sprite:new(x, y, width, height, atlas, spriteTable, name)
+function Sprite:new(x, y, width, height, atlas, spriteTable, name, scale)
     local sprite = {}
     setmetatable(sprite, self)
     self.__index = self
@@ -35,9 +35,15 @@ function Sprite:new(x, y, width, height, atlas, spriteTable, name)
     sprite.center = {x = x + width / 2, y = y + height / 2}
     sprite.quad = atlas.quad
     sprite.image = atlas.image
-    sprite.scale = {x = 1, y = 1}
+    if scale then
+        sprite.scale = {x = scale, y = scale}
+    else
+        sprite.scale = {x = 1, y = 1}
+    end
     sprite.name = name
-    spriteTable:addSprite(sprite, sprite.name)
+    if spriteTable then
+        spriteTable:addSprite(sprite, name)
+    end
     return sprite
 end
 

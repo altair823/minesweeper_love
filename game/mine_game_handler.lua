@@ -34,6 +34,7 @@ function MineGameHandler:new(mineAtlas, xCount, yCount, mineCount)
     handler.isGameOver = false
     handler.mineCount = mineCount
     handler.buttonClickTable = ClickableTable:new()
+    handler.buttonClickTable:deactivate()
     handler.isStarted = false
     handler.mineBoard = MineBoard:new(
         -math.floor(DefaultWindowSize.width / 2), 
@@ -42,22 +43,17 @@ function MineGameHandler:new(mineAtlas, xCount, yCount, mineCount)
         DefaultWindowSize.height, 
         handler.mineAtlas.boardAtlas, 
         handler.mineGameSpriteTable)
+    handler.mineBoard:deactivate()
     handler.mineBoard:createBlocks(xCount, yCount, handler.mineAtlas.cellAtlas, handler.mineAtlas.blockAtlas)
     handler:makeButtons()
+    handler:makeUISprite()
     handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "NumberFont", 64)
     handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "TextFont", 28)
+    handler.currentTime = 0
+    handler.duration = 0.03
+    handler.uiScale = 0.00001
+    handler.isUILoaded = {}
     return handler
-end
-
---[[
-    Function to print the remaining mine count
-]]--
-function MineGameHandler:printRemainingMines()
-    local remainingMine = self.mineCount - self:countFlaggedCell()
-    love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
-    love.graphics.print("찾지 못한 지뢰", -790 * self.mineBoard.scale.x, -280 * self.mineBoard.scale.y)
-    love.graphics.setFont(self.mineGameSpriteTable:getFont("NumberFont"))
-    love.graphics.print(remainingMine, -730 * self.mineBoard.scale.x, -240 * self.mineBoard.scale.y)
 end
 
 --[[
@@ -78,7 +74,7 @@ function MineGameHandler:makeButtons()
         64, 64, 
         MineAtlas.buttonAtlas[MineGameButtonEnum.RESTART],
         self.mineGameSpriteTable,
-        "restartButton")
+        "restartButton", 0.01)
     self.buttonClickTable:registerClick(ClickTypeEnum.LEFT, self.restartButton)
     self.restartButton.leftClicked = function()
         print("Restarting")
@@ -90,14 +86,14 @@ function MineGameHandler:makeButtons()
         64, 64, 
         MineAtlas.indicatorAtlas.notGameover,
         self.mineGameSpriteTable, 
-        "gameoverIndicator")
+        "gameoverIndicator", 0.01)
     self.winIndicator = Sprite:new(
         self.mineBoard.center.x + (64 * self.mineBoard.scale.x), 
         -self.mineBoard.height / 2 + (16 * self.mineBoard.scale.y),
         64, 64, 
         MineAtlas.indicatorAtlas.notWin,
         self.mineGameSpriteTable,
-        "winIndicator")
+        "winIndicator", 0.01)
 end
 
 --[[
@@ -109,6 +105,10 @@ function MineGameHandler:initButtons()
     self.mineGameSpriteTable:addSprite(self.gameoverIndicator, "gameoverIndicator")
     self.mineGameSpriteTable:addSprite(self.winIndicator, "winIndicator")
     self.mineGameSpriteTable:addSprite(self.restartButton, "restartButton")
+end
+
+function MineGameHandler:initUI()
+    self.mineGameSpriteTable:addSprite(self.ui.remainingMineWindow, "remainingMineWindow")
 end
 
 --[[
@@ -150,9 +150,14 @@ function MineGameHandler:restart()
     self.isWin = false
     self:initButtons()
     self:initTexts()
-    self.mineGameSpriteTable:resizeAllSprite(love.graphics.getWidth(), love.graphics.getHeight())
+    self:initUI()
     self.mineBoard:activate()
     self.isStarted = false
+    self.currentTime = 0
+    self.duration = 0.03
+    self.uiScale = 0.1
+    self.isUILoaded[1] = nil
+    self.mineGameSpriteTable:resizeAllSprite(love.graphics.getWidth(), love.graphics.getHeight())
 end
 
 --[[
@@ -203,6 +208,51 @@ function MineGameHandler:countFlaggedCell()
 end
 
 --[[
+    Function to print the remaining mine count
+]]--
+function MineGameHandler:printRemainingMines()
+    local remainingMine = self.mineCount - self:countFlaggedCell()
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
+    love.graphics.print("찾지 못한 지뢰", -790 * self.mineBoard.scale.x, -280 * self.mineBoard.scale.y)
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("NumberFont"))
+    love.graphics.print(remainingMine, -730 * self.mineBoard.scale.x, -240 * self.mineBoard.scale.y)
+end
+
+--[[
+    Function to print the version of the game
+]]--
+function MineGameHandler:printVersion()
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.print("Mine Sweeper v" .. VERSION_MAJOR .. "." .. VERSION_MINOR .. "." .. VERSION_PATCH, 510 * self.mineBoard.scale.x, 400 * self.mineBoard.scale.y)
+    love.graphics.setColor(255, 255, 255)
+end
+
+function MineGameHandler:makeUISprite()
+    self.ui = {}
+    self.ui.remainingMineWindow = Sprite:new(
+        -800 * self.mineBoard.scale.x, 
+        -340 * self.mineBoard.scale.y, 
+        200, 157, 
+        MineAtlas.uiAtlas.remainingMineWindow, 
+        self.mineGameSpriteTable, 
+        "remainingMineWindow",
+        0.01)
+    
+end
+
+function MineGameHandler:drawUI()
+    self.ui.remainingMineWindow:draw()
+end
+
+function MineGameHandler:printUI()
+    love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.print("Mine Count", -790 * self.mineBoard.scale.x, -335 * self.mineBoard.scale.y)
+    love.graphics.setColor(255, 255, 255)
+end
+
+--[[
     Function to update the game
     dt: time passed since the last update
 ]]--
@@ -217,12 +267,53 @@ end
 ]]--
 function MineGameHandler:draw()
     -- love.graphics.draw(self.canvas, 0, 0)
-    
+    local r, g, b = love.math.colorFromBytes(50, 41, 71)
+    love.graphics.setBackgroundColor(r, g, b)
     self.mineBoard:draw()
+    self:drawUI()
     self.restartButton:draw()
     self.gameoverIndicator:draw()
     self.winIndicator:draw()
-    self:printRemainingMines()
+    if self.isUILoaded[1] then
+        self:printRemainingMines()
+        self:printUI()
+        self:printVersion()
+    end
+end
+
+function MineGameHandler:update(dt)
+    -- change the scale of the ui sprite.
+    if self.uiScale >= self.mineGameSpriteTable.spriteRatio then
+        self.isUILoaded[1] = true
+        if not self.buttonClickTable.isActive then
+            self.buttonClickTable:activate()
+        end
+        if not self.mineBoard.clickableTable.isActive then
+            self.mineBoard:activate()
+        end
+    else
+        print(self.currentTime)
+        self.currentTime = self.currentTime + dt
+        if self.currentTime >= self.duration then
+            self.currentTime = self.currentTime - self.duration
+            self.uiScale = self.uiScale + 0.05
+            self.ui.remainingMineWindow:rescale(self.uiScale * self.mineBoard.scale.x, self.uiScale * self.mineBoard.scale.y)
+            self.restartButton:rescale(self.uiScale * self.mineBoard.scale.x, self.uiScale * self.mineBoard.scale.y)
+            self.gameoverIndicator:rescale(self.uiScale * self.mineBoard.scale.x, self.uiScale * self.mineBoard.scale.y)
+            self.winIndicator:rescale(self.uiScale * self.mineBoard.scale.x, self.uiScale * self.mineBoard.scale.y)
+            self.mineGameSpriteTable:rescaleAll(self.uiScale)
+        end
+    end
+    if self.isUILoaded[1] then
+        self.currentTime = self.currentTime + dt
+        if self.currentTime >= self.duration then
+            self.currentTime = self.currentTime - self.duration
+            self.uiScale = self.uiScale * 1.05
+            if self.uiScale >= self.mineGameSpriteTable.spriteRatio then
+                self.uiScale = self.mineGameSpriteTable.spriteRatio
+            end
+        end
+    end
 end
 
 --[[

@@ -28,7 +28,7 @@ function ClickableTable:new(findFunction)
     local clickable = {}
     setmetatable(clickable, self)
     self.__index = self
-    clickable.isActive = true
+    clickable.isActive = false
     clickable.leftClickRegistry = {}
     clickable.rightClickRegistry = {}
     clickable.findFunction = findFunction or nil
