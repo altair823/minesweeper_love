@@ -10,31 +10,36 @@ MineGameButtonEnum = {
 
 MineGameHandler = Object:inherit()
 
-function MineGameHandler:new(mineAtlas, width, height, mineCount)
+function MineGameHandler:new(mineAtlas, xCount, yCount, mineCount)
     local handler = {}
     setmetatable(handler, self)
     self.__index = self
     handler.mineAtlas = mineAtlas
     handler.mineGameSpriteTable = SpriteTable:new()
-    handler.mineField = MineField:new(width, height, mineCount)
+    handler.mineField = MineField:new(xCount, yCount)
+    handler.isGameOver = false
+    handler.mineCount = mineCount
+    handler.buttonClickTable = ClickableTable:new()
+    handler.isStarted = false
     handler.mineBoard = MineBoard:new(
         -math.floor(DefaultWindowSize.width / 2), 
         -math.floor(DefaultWindowSize.height / 2), 
         DefaultWindowSize.width, 
         DefaultWindowSize.height, 
-        mineAtlas.boardAtlas, 
+        handler.mineAtlas.boardAtlas, 
         handler.mineGameSpriteTable)
-    handler.mineBoard:setBlockMatrix(handler.mineField, mineAtlas.cellAtlas, mineAtlas.blockAtlas, MineImages.mineCellWidth, MineImages.mineCellHeight)
-    handler.isGameOver = false
-    handler.buttonClickTable = ClickableTable:new()
+    handler.mineBoard:createBlocks(xCount, yCount, handler.mineAtlas.cellAtlas, handler.mineAtlas.blockAtlas)
     handler:makeButtons()
     handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "NumberFont", 64)
     handler.mineGameSpriteTable:addFont("fonts/NeoDunggeunmoPro-Regular.ttf", "TextFont", 28)
     return handler
 end
 
+function MineGameHandler:createBoard(startX, startY, mineCount)
+end
+
 function MineGameHandler:print()
-    local remainingMine = self.mineField.mineCount - self:countFlaggedCell()
+    local remainingMine = self.mineCount - self:countFlaggedCell()
     love.graphics.setFont(self.mineGameSpriteTable:getFont("TextFont"))
     love.graphics.print("찾지 못한 지뢰", -790 * self.mineBoard.scale.x, -280 * self.mineBoard.scale.y)
     love.graphics.setFont(self.mineGameSpriteTable:getFont("NumberFont"))
@@ -97,10 +102,9 @@ function MineGameHandler:isMineCellReveal()
 end
 
 function MineGameHandler:restart()
-    local width = self.mineField.xCount
-    local height = self.mineField.yCount
-    local mineCount = self.mineField.mineCount
-    self.mineField = MineField:new(width, height, mineCount)
+    local xCount = self.mineField.xCount
+    local yCount = self.mineField.yCount
+    self.mineField = MineField:new(xCount, yCount)
     self.mineGameSpriteTable = SpriteTable:new()
     self.mineBoard = MineBoard:new(
         -math.floor(DefaultWindowSize.width / 2), 
@@ -109,9 +113,10 @@ function MineGameHandler:restart()
         DefaultWindowSize.height, 
         self.mineAtlas.boardAtlas, 
         self.mineGameSpriteTable)
-    self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, MineImages.mineCellWidth, MineImages.mineCellHeight)
+    self.mineBoard:createBlocks(xCount, yCount, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas)
     self.isGameOver = false
     self.isWin = false
+    self.isStarted = false
     self:initButtons()
     self:initTexts()
     self.mineGameSpriteTable:resizeAllSprite(love.graphics.getWidth(), love.graphics.getHeight())
@@ -174,6 +179,18 @@ function MineGameHandler:draw()
 end
 
 function MineGameHandler:leftClicked(x, y)
+    if self.mineBoard:isXYInsideBlockBoard(x, y, MineImages.mineCellWidth, MineImages.mineCellHeight) then
+        if not self.isStarted then
+            local i, j = self.mineBoard:toBlockCoordinate(x, y)
+            print("Start at " .. i .. " " .. j)
+            self.mineField:setEmpty{{i, j}}
+            self.mineField:setMine(self.mineCount)
+            self.isStarted = true
+            print("MineField set")
+            self.mineBoard:setBlockMatrix(self.mineField, self.mineAtlas.cellAtlas, self.mineAtlas.blockAtlas, MineImages.mineCellWidth, MineImages.mineCellHeight)
+        end
+    end
+
     self.buttonClickTable:leftClicked(x, y)
     self.mineBoard.clickableTable:leftClicked(x, y)
     self:blockOpenEvent()

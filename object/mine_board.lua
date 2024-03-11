@@ -11,21 +11,60 @@ function MineBoard:new(x, y, width, height, atlas, spriteTable)
     local board = Sprite.new(self, x, y, width, height, atlas, spriteTable, "MineBoard")
     board.clickableTable = ClickableTable:new(
         function (cx, cy)
-            local blockWidth = board.scale.x * MineImages.mineCellWidth
-            local blockHeight = board.scale.y * MineImages.mineCellHeight
-            if cx >= board.center.x - (board.mineField.xCount * blockWidth) / 2 and cx <= board.center.x + (board.mineField.xCount * blockWidth) / 2 - 1
-            and cy >= board.center.y - (board.mineField.yCount * blockHeight) / 2 and cy <= board.center.y + (board.mineField.yCount * blockHeight) / 2 - 1 then
-                local i = math.floor((cx - (board.center.x - (board.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
-                local j = math.floor((cy - (board.center.y - (board.mineField.yCount * blockHeight) / 2)) / blockHeight) + 1
+            local i, j = board:toBlockCoordinate(cx, cy)
+            if i == nil then
+                return nil
+            else
                 return "MineBlock" .. i .. " " .. j
             end
-            return nil
         end
     )
     board.spriteTable = spriteTable
     self.openedCells = {}
     self.flaggedCells = {}
     return board
+end
+
+function MineBoard:toBlockCoordinate(x, y)
+    local blockWidth = self.blockMatrix[1][1].width
+    local blockHeight = self.blockMatrix[1][1].height
+    if x < self.center.x - (self.xCount * blockWidth) / 2 or x > self.center.x + (self.xCount * blockWidth) / 2 - 1
+    or y < self.center.y - (self.yCount * blockHeight) / 2 or y > self.center.y + (self.yCount * blockHeight) / 2 - 1 then
+        return nil
+    end
+    local i = math.floor((x - (self.center.x - (self.xCount * blockWidth) / 2)) / blockWidth) + 1
+    local j = math.floor((y - (self.center.y - (self.yCount * blockHeight) / 2)) / blockHeight) + 1
+    return i, j
+end
+
+function MineBoard:isXYInsideBlockBoard(x, y, blockWidth, blockHeight)
+    return x >= self.center.x - (self.xCount * blockWidth) / 2 and x <= self.center.x + (self.xCount * blockWidth) / 2 - 1
+    and y >= self.center.y - (self.yCount * blockHeight) / 2 and y <= self.center.y + (self.yCount * blockHeight) / 2 - 1
+    
+end
+
+function MineBoard:createBlocks(xCount, yCount, cellAtlas, blockAtlas)
+    self.xCount = xCount
+    self.yCount = yCount
+    self.cellMatrix = {}
+    self.blockMatrix = {}
+    for i=1, xCount do
+        self.cellMatrix[i] = {}
+        self.blockMatrix[i] = {}
+        for j=1, yCount do
+            self.cellMatrix[i][j] = MineCell:new(
+                self.center.x - (xCount * MineImages.mineCellWidth) / 2 + (i - 1) * MineImages.mineCellWidth,
+                self.center.y - (yCount * MineImages.mineCellHeight) / 2 + (j - 1) * MineImages.mineCellHeight,
+                MineImages.mineCellWidth, MineImages.mineCellHeight,
+                MineEnum.EMPTY, cellAtlas[MineEnum.EMPTY], self.spriteTable, i, j)
+            self.blockMatrix[i][j] = MineBlock:new(
+                self.center.x - (xCount * MineImages.mineCellWidth) / 2 + (i - 1) * MineImages.mineCellWidth,
+                self.center.y - (yCount * MineImages.mineCellHeight) / 2 + (j - 1) * MineImages.mineCellHeight,
+                MineImages.mineCellWidth, MineImages.mineCellHeight,
+                blockAtlas[BlockEnum.DEFAULT], blockAtlas[BlockEnum.FLAG],
+                self.spriteTable, i, j)
+        end
+    end
 end
 
 function MineBoard:getLastOpenedCells()
@@ -187,10 +226,10 @@ prevLoc = {i = 0, j = 0}
 function MineBoard:mouseMoved(x, y)
     local blockWidth = self.blockMatrix[1][1].width
     local blockHeight = self.blockMatrix[1][1].height
-    if x >= self.center.x - (self.mineField.xCount * blockWidth) / 2 and x <= self.center.x + (self.mineField.xCount * blockWidth) / 2 - 1
-    and y >= self.center.y - (self.mineField.yCount * blockHeight) / 2 and y <= self.center.y + (self.mineField.yCount * blockHeight) / 2 - 1 then
-        local i = math.floor((x - (self.center.x - (self.mineField.xCount * blockWidth) / 2)) / blockWidth) + 1
-        local j = math.floor((y - (self.center.y - (self.mineField.yCount * blockHeight) / 2)) / blockHeight) + 1
+    if x >= self.center.x - (self.xCount * blockWidth) / 2 and x <= self.center.x + (self.xCount * blockWidth) / 2 - 1
+    and y >= self.center.y - (self.yCount * blockHeight) / 2 and y <= self.center.y + (self.yCount * blockHeight) / 2 - 1 then
+        local i = math.floor((x - (self.center.x - (self.xCount * blockWidth) / 2)) / blockWidth) + 1
+        local j = math.floor((y - (self.center.y - (self.yCount * blockHeight) / 2)) / blockHeight) + 1
         if prevLoc.i ~= i or prevLoc.j ~= j then
             if prevLoc.i ~= 0 and prevLoc.j ~= 0 then
                 self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
