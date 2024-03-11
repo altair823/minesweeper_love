@@ -1,12 +1,28 @@
+--[[
+    MineBoard class
+    This class is responsible for creating the board of the game. 
+    It is also responsible for creating the blocks and cells of the game. 
+    It also defines the logic of the game.
+]]--
+
 require "model/mine_field"
 
 require "object/mine_block"
 require "object/mine_cell"
 
-require("common/clickable_table")
+require "common/clickable_table"
 
 MineBoard = Sprite:inherit()
 
+--[[
+    Constructor for the MineBoard class
+    x: x position of the board
+    y: y position of the board
+    width: width of the board
+    height: height of the board
+    atlas: initial atlas of the board
+    spriteTable: sprite table to add the board for scaling
+]]--
 function MineBoard:new(x, y, width, height, atlas, spriteTable)
     local board = Sprite.new(self, x, y, width, height, atlas, spriteTable, "MineBoard")
     board.clickableTable = ClickableTable:new(
@@ -25,6 +41,12 @@ function MineBoard:new(x, y, width, height, atlas, spriteTable)
     return board
 end
 
+--[[
+    Function to convert the x and y coordinates to the block indices
+    x and y are the coordinates that is started with top left corner of the window.
+    x: x coordinate
+    y: y coordinate
+]]--
 function MineBoard:toBlockCoordinate(x, y)
     local blockWidth = self.blockMatrix[1][1].width
     local blockHeight = self.blockMatrix[1][1].height
@@ -37,12 +59,30 @@ function MineBoard:toBlockCoordinate(x, y)
     return i, j
 end
 
+--[[
+    Function to check if the x and y coordinates are inside the block board
+    x and y are the coordinates that is started with top left corner of the window.
+    x: x coordinate
+    y: y coordinate
+    blockWidth: width of the block
+    blockHeight: height of the block
+]]--
 function MineBoard:isXYInsideBlockBoard(x, y, blockWidth, blockHeight)
-    return x >= self.center.x - (self.xCount * blockWidth) / 2 and x <= self.center.x + (self.xCount * blockWidth) / 2 - 1
-    and y >= self.center.y - (self.yCount * blockHeight) / 2 and y <= self.center.y + (self.yCount * blockHeight) / 2 - 1
+    if x >= self.center.x - (self.xCount * blockWidth * self.scale.x) / 2 and x <= self.center.x + (self.xCount * blockWidth * self.scale.x) / 2 - 1
+    and y >= self.center.y - (self.yCount * blockHeight * self.scale.y) / 2 and y <= self.center.y + (self.yCount * blockHeight * self.scale.y) / 2 - 1 then
+        return true
+    end
+    return false
     
 end
 
+--[[
+    Function to create the blocks and cells of the board
+    xCount: number of blocks in the x direction
+    yCount: number of blocks in the y direction
+    cellAtlas: atlas for the cells
+    blockAtlas: atlas for the blocks
+]]--
 function MineBoard:createBlocks(xCount, yCount, cellAtlas, blockAtlas)
     self.xCount = xCount
     self.yCount = yCount
@@ -67,22 +107,28 @@ function MineBoard:createBlocks(xCount, yCount, cellAtlas, blockAtlas)
     end
 end
 
-function MineBoard:getLastOpenedCells()
-    return self.openedCells[#self.openedCells]
-end
-
-function MineBoard:isCellNumber(i, j)
-    return self.cellMatrix[i][j].value ~= MineEnum.MINE and self.cellMatrix[i][j].value ~= MineEnum.EMPTY
-end
-
+--[[
+    Function to activate the clickable table
+]]--
 function MineBoard:activate()
     self.clickableTable:activate()
 end
 
+--[[
+    Function to deactivate the clickable table
+]]--
 function MineBoard:deactivate()
     self.clickableTable:deactivate()
 end
 
+--[[
+    Function to set the block matrix and cell matrix of the board with the mine field
+    mineField: mine field object
+    cellAtlas: atlas for the cells
+    blockAtlas: atlas for the blocks
+    width: width of the block
+    height: height of the block
+]]--
 function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, height)
     self.mineField = mineField
     self.cellMatrix = {}
@@ -107,12 +153,20 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
     end
     for i=1, #self.cellMatrix do
         for j=1, #self.cellMatrix[i] do
+            -- Register the left click events for the blocks
             self.clickableTable:registerClick(ClickTypeEnum.LEFT, self.blockMatrix[i][j], function ()
+                if self.blockMatrix[i][j].isFlagged then
+                    return nil
+                end
+                if self.blockMatrix[i][j].isShown then
+                    self.blockMatrix[i][j]:open()
+                end
                 if not self.blockMatrix[i][j].isShown then 
                     self:tryOpenAdjacent(i, j)
                 end
                 table.insert(self.openedCells, {i = i, j = j})
             end)
+            -- Register the right click events for the blocks
             self.clickableTable:registerClick(ClickTypeEnum.RIGHT, self.blockMatrix[i][j], function ()
                 if self.blockMatrix[i][j].isShown then
                     self.blockMatrix[i][j]:toggleFlag()
@@ -130,10 +184,20 @@ function MineBoard:setBlockMatrix(mineField, cellAtlas, blockAtlas, width, heigh
     end
 end
 
+--[[
+    Function to open the block
+    i: x index of the block
+    j: y index of the block
+]]--
 function MineBoard:openBlock(i, j)
-    self.blockMatrix[i][j]:leftClicked()
+    self.blockMatrix[i][j]:open()
 end
 
+--[[
+    Function to open the adjacent blocks that only when it is empty block
+    x: x index of the block
+    y: y index of the block
+]]--
 function MineBoard:openAdjacentOfEmpty(x, y)
     local adjacents = {
         {0, 1},
@@ -162,6 +226,11 @@ function MineBoard:openAdjacentOfEmpty(x, y)
     end
 end
 
+--[[
+    Function to try to open the adjacent blocks of the block.
+    x: x index of the block
+    y: y index of the block
+]]--
 function MineBoard:tryOpenAdjacent(x, y)
     local adjacents = {
         {0, 1},
@@ -199,12 +268,18 @@ function MineBoard:tryOpenAdjacent(x, y)
     end
 end
 
+--[[
+    Function to draw the board
+]]--
 function MineBoard:draw()
     self.super.draw(self)
     self:draw_numbers()
     self:draw_blocks()
 end
 
+--[[
+    Function to draw the numbers of the cells
+]]--
 function MineBoard:draw_numbers()
     for i=1, #self.cellMatrix do
         for j=1, #self.cellMatrix[i] do
@@ -213,6 +288,9 @@ function MineBoard:draw_numbers()
     end
 end
 
+--[[
+    Function to draw the blocks of the board
+]]--
 function MineBoard:draw_blocks()
     for i=1, #self.blockMatrix do
         for j=1, #self.blockMatrix[i] do
@@ -221,8 +299,14 @@ function MineBoard:draw_blocks()
     end
 end
 
-prevLoc = {i = 0, j = 0}
+-- Mouse previous location
+MousePrevLoc = {i = 0, j = 0}
 
+--[[
+    Function to handle the mouse moved event
+    x: x coordinate of the mouse
+    y: y coordinate of the mouse
+]]--
 function MineBoard:mouseMoved(x, y)
     local blockWidth = self.blockMatrix[1][1].width
     local blockHeight = self.blockMatrix[1][1].height
@@ -230,19 +314,19 @@ function MineBoard:mouseMoved(x, y)
     and y >= self.center.y - (self.yCount * blockHeight) / 2 and y <= self.center.y + (self.yCount * blockHeight) / 2 - 1 then
         local i = math.floor((x - (self.center.x - (self.xCount * blockWidth) / 2)) / blockWidth) + 1
         local j = math.floor((y - (self.center.y - (self.yCount * blockHeight) / 2)) / blockHeight) + 1
-        if prevLoc.i ~= i or prevLoc.j ~= j then
-            if prevLoc.i ~= 0 and prevLoc.j ~= 0 then
-                self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
+        if MousePrevLoc.i ~= i or MousePrevLoc.j ~= j then
+            if MousePrevLoc.i ~= 0 and MousePrevLoc.j ~= 0 then
+                self.blockMatrix[MousePrevLoc.i][MousePrevLoc.j]:untoggle()
             end
             self.blockMatrix[i][j]:toggle()
-            prevLoc.i = i
-            prevLoc.j = j
+            MousePrevLoc.i = i
+            MousePrevLoc.j = j
         end
     else
-        if prevLoc.i ~= 0 and prevLoc.j ~= 0 then
-            self.blockMatrix[prevLoc.i][prevLoc.j]:untoggle()
-            prevLoc.i = 0
-            prevLoc.j = 0
+        if MousePrevLoc.i ~= 0 and MousePrevLoc.j ~= 0 then
+            self.blockMatrix[MousePrevLoc.i][MousePrevLoc.j]:untoggle()
+            MousePrevLoc.i = 0
+            MousePrevLoc.j = 0
         end
     end
 end

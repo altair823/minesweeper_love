@@ -1,3 +1,9 @@
+--[[
+    Object class
+    This is a simple class that can be inherited by other classes
+    It provides a simple inheritance mechanism and a super method for OOP.
+]]--
+
 Object = {}
 Object.__index = Object
 

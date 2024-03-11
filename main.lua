@@ -6,14 +6,14 @@ require "resource_enum"
 
 WindowXCenter = math.floor(love.graphics.getWidth()/2)
 WindowYCenter = math.floor(love.graphics.getHeight()/2)
+love.window.setTitle("Mine Sweeper")
+
 
 function love.load()
     if PROFILER then
         love.profiler = require('profile') 
         love.profiler.start()
     end
-
-    love.window.setTitle("Mine Sweeper")
 
 
     mineGameHandler = MineGameHandler:new(MineAtlas, 30, 16, 99)
@@ -66,13 +66,6 @@ end
 
 function love.resize(w, h)
     
-    local DefaultWindowSize = {width = 1600, height = 900}
-    SpriteRatio = 1
-    if w / h > DefaultWindowSize.width / DefaultWindowSize.height then
-        SpriteRatio = h / DefaultWindowSize.height
-    else
-        SpriteRatio = w / DefaultWindowSize.width
-    end
     mineGameHandler.mineGameSpriteTable:resizeAllSprite(w, h)
     
 
