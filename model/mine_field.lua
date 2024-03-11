@@ -91,17 +91,15 @@ function MineField:setMine(mineCount)
         return nil
     end
     self.mineCount = mineCount
-    for i=1, self.mineCount do
+    for i=1, mineCount do
         local x = math.random(1, self.xCount)
         local y = math.random(1, self.yCount)
         while self.mineMatrix[x][y] ~= nil do
             x = math.random(1, self.xCount)
             y = math.random(1, self.yCount)
         end
+        self.mineMatrix[x][y] = MineEnum.MINE
         table.insert(self.mineLocation, {x = x, y = y})
-    end
-    for i=1, #self.mineLocation do
-        self.mineMatrix[self.mineLocation[i].x][self.mineLocation[i].y] = MineEnum.MINE
     end
     self:setAdjacent()
 end

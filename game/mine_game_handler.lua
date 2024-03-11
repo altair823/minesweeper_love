@@ -245,7 +245,6 @@ function MineGameHandler:leftClicked(x, y)
     self.buttonClickTable:leftClicked(x, y)
     self.mineBoard.clickableTable:leftClicked(x, y)
     self:blockOpenEvent()
-    self:checkWin()
 end
 
 --[[
@@ -279,6 +278,7 @@ function MineGameHandler:blockOpenEvent()
     end
     if not self.isGameOver and self:isMineCellReveal() then
         self:gameover()
+        return
     else
         local i = self.mineBoard.openedCells[#self.mineBoard.openedCells].i
         local j = self.mineBoard.openedCells[#self.mineBoard.openedCells].j
@@ -286,5 +286,6 @@ function MineGameHandler:blockOpenEvent()
             self.mineBoard:openAdjacentOfEmpty(i, j)
         end
     end
+    self:checkWin()
 end
 
